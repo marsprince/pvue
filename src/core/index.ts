@@ -13,14 +13,17 @@ export class Vue {
     this.$options = options;
   }
 
+  // 调用render方法，把实例渲染成一个虚拟 Node，
   _render() {
     this.$el = this.$options.render.call(this, this.$createElement);
   }
 
+  // 返回一个vnode
   $createElement(tag: string) {
     return document.createElement(tag);
   }
 
+  // 挂载，和平台有关
   $mount(el: any) {
     this._render();
     if (typeof el === "string") {
