@@ -1,4 +1,2 @@
-function tests() {
-  console.log("starts");
-}
-tests();
+import { Vue } from "./core/index";
+export default Vue;
