@@ -5,9 +5,14 @@ export interface IVNode {
   data?: IVNodeData;
   children?: Array<IVNode>;
   text?: string;
+  // 节点对应的vue组件
   context?: Vue;
   // vnode对应的真实节点
-  elm?: any;
+  elm?: Node;
+  // 是否是静态节点（即编译出来完全没有变量）
+  isStatic?: boolean;
+  key?: string | number;
+  isOnce?: boolean;
 }
 
 export interface IVNodeData {}
