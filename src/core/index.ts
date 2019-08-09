@@ -6,13 +6,14 @@ import {
 import { installRenderHelpers } from "./helpers";
 import { IVNodeData, IVNode } from "../@types/vnode";
 import { createElement } from "../vdom/createElement";
+import { markStatic } from "../vdom/static";
 
 class Vue {
   // 合并后的options
   $options: any = {};
   // dom节点
   $el: any;
-  // 当前节点对应的vnode
+  // 当前组件对应的vnode
   _vnode: IVNode;
 
   constructor(options: object) {
@@ -33,6 +34,7 @@ class Vue {
       // 如果没有
       this.$el = this.__patch__(this.$el, vnode);
     }
+    this._vnode = vnode;
   }
 
   // 调用render方法，把实例渲染成一个虚拟 Node，
@@ -57,6 +59,21 @@ class Vue {
   __patch__: Function;
   // 静态对象
   static config: any = {};
+
+  // 静态树与静态渲染
+  _staticTrees: null | any;
+  renderStatic(index: number, isInFor: boolean) {
+    const cached = this._staticTrees || (this._staticTrees = []);
+    let tree = cached[index];
+    // if has already-rendered static tree and not inside v-for,
+    // we can reuse the same tree.
+    if (tree && !isInFor) {
+      return tree;
+    }
+    tree = cached[index] = this.$options.staticRenderFns[index].call(this);
+    markStatic(tree, `__static__${index}`);
+    return tree;
+  }
 }
 
 // 安装一些render需要的别名
