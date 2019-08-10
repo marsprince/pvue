@@ -1,7 +1,7 @@
 import { IVNode } from "../../@types/vnode";
 import { isUndef, isDef } from "../../shared/utils";
-
-export function patch() {}
+import { Hooks } from "../backend/modules/hooks.enum";
+import { createEmptyNode } from "../../core/vdom/vnode";
 
 export class Patch {
   nodeOps: any;
@@ -11,6 +11,14 @@ export class Patch {
     this.nodeOps = backend.nodeOps;
     // 模块（包含特定hook等）
     this.modules = backend.modules;
+  }
+
+  invokeHooks(name: string, oldVnode: IVNode, vnode: IVNode) {
+    // 挂在modules里的hooks
+    const hooks = this.modules.hooks[name];
+    for (let i = 0; i < hooks.length; i++) {
+      hooks[i](oldVnode, vnode);
+    }
   }
 
   createElm(vnode?: IVNode, parentElm?: any) {
@@ -29,9 +37,9 @@ export class Patch {
       // 遍历子虚拟节点，递归调用 createElm
       this.createChildren(vnode, children);
       // 激活对应的hook
-      // if (isDef(newVNode.data)) {
-      //   invokeCreateHooks();
-      // }
+      if (isDef(vnode.data)) {
+        this.invokeHooks(Hooks.Create, createEmptyNode(), vnode);
+      }
       this.insert(parentElm, vnode.elm);
     } else {
       vnode.elm = nodeOps.createTextNode(vnode.text);

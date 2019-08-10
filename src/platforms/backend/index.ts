@@ -1,2 +1,3 @@
 import nodeOps from "./nodeOps";
-export default { nodeOps };
+import modules from "./modules";
+export default { nodeOps, modules };

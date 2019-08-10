@@ -1,6 +1,6 @@
-import { IVNode } from "../../@types/vnode";
+import { IVNode } from "../../../@types/vnode";
 
-export function createElement(tagName: string, vnode: IVNode): Element {
+function createElement(tagName: string, vnode: IVNode): Element {
   const elm = document.createElement(tagName);
   if (tagName !== "select") {
     return elm;
@@ -16,11 +16,11 @@ export function createElement(tagName: string, vnode: IVNode): Element {
   return elm;
 }
 
-export function appendChild(node: Node, child: Node) {
+function appendChild(node: Node, child: Node) {
   node.appendChild(child);
 }
 
-export function createTextNode(text: string): Text {
+function createTextNode(text: string): Text {
   return document.createTextNode(text);
 }
 
