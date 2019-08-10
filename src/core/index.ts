@@ -5,11 +5,12 @@ import {
 
 import { installRenderHelpers } from "./helpers";
 import { IVNodeData, IVNode } from "../@types/vnode";
-import { createElement } from "../vdom/createElement";
-import { markStatic } from "../vdom/static";
+import { createElement } from "./vdom/createElement";
+import { markStatic } from "./vdom/static";
+import { proxyMethods } from "./instance/proxy";
 
 class Vue {
-  // 合并后的options
+  // 合并后的options,只保留最原始的输入，没有任何响应式的东西
   $options: any = {};
   // dom节点
   $el: any;
@@ -23,6 +24,7 @@ class Vue {
   _init(options: object) {
     // 复杂的合并规则
     this.$options = options;
+    proxyMethods(this);
   }
 
   // 将vnode渲染并挂载

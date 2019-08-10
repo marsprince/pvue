@@ -15,4 +15,6 @@ export interface IVNode {
   isOnce?: boolean;
 }
 
-export interface IVNodeData {}
+export interface IVNodeData {
+  on?: { [key: string]: Function | Array<Function> };
+}

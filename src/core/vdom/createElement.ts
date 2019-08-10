@@ -1,5 +1,5 @@
-import { IVNodeData } from "../@types/vnode";
-import { Vue } from "../core";
+import { IVNodeData } from "../../@types/vnode";
+import { Vue } from "../index";
 import VNode from "./vnode";
 
 // 外界调用的,初始化逻辑移出
