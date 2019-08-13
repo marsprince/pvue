@@ -1,7 +1,16 @@
 import { IVNode } from "../../@types/vnode";
 import { isUndef, isDef } from "../../shared/utils";
-import { Hooks } from "../backend/modules/hooks.enum";
+import { Hooks } from "../../platforms/backend/modules/hooks.enum";
 import { createEmptyNode } from "../../core/vdom/vnode";
+
+function sameVnode(a, b) {
+  return (
+    a.key === b.key &&
+    (a.tag === b.tag &&
+      a.isComment === b.isComment &&
+      isDef(a.data) === isDef(b.data))
+  );
+}
 
 export class Patch {
   nodeOps: any;
@@ -48,6 +57,33 @@ export class Patch {
     return vnode;
   }
 
+  // 每一个相同节点都会进入
+  patchVnode(oldVnode: IVNode, vnode: IVNode) {
+    if (oldVnode === vnode) {
+      return;
+    }
+    const nodeOps = this.nodeOps;
+    const elm = (vnode.elm = oldVnode.elm);
+    // 两个相同节点，涉及文本和child比较
+    if (isUndef(vnode.text)) {
+      const oldCh = oldVnode.children;
+      const ch = vnode.children;
+      // 如果新节点文本不存在，则设置为‘’
+      if (isDef(oldCh) && isDef(ch)) this.updateChildren(elm, oldCh, ch);
+    } else {
+      // 简单的设置新节点的文本
+      nodeOps.setTextContent(elm, vnode.text);
+    }
+  }
+
+  // 比较子节点
+  updateChildren(parentElm: Node, oldCh: Array<IVNode>, newCh: Array<IVNode>) {
+    // 先写一个简单的
+    for (let i = 0; i < oldCh.length; i++) {
+      this.patchVnode(oldCh[i], newCh[i]);
+    }
+  }
+
   createChildren(vnode, children) {
     // 循环调用creatElm
     if (Array.isArray(children)) {
@@ -66,8 +102,18 @@ export class Patch {
   }
 
   patch(oldVnode: IVNode, vnode: IVNode) {
+    // 如果新节点存在且老节点不存在
+    //
+
     if (isUndef(oldVnode)) {
+      // 如果老节点不存在
       this.createElm(vnode);
+    } else {
+      // 两个都存在，并且是相同节点
+      if (sameVnode(oldVnode, vnode)) {
+        // 进入节点的patch流程
+        this.patchVnode(oldVnode, vnode);
+      }
     }
     return vnode.elm;
   }

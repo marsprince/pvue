@@ -24,8 +24,13 @@ function createTextNode(text: string): Text {
   return document.createTextNode(text);
 }
 
+function setTextContent(node: Node, text: string) {
+  node.textContent = text;
+}
+
 export default {
   createElement,
   appendChild,
-  createTextNode
+  createTextNode,
+  setTextContent
 };
