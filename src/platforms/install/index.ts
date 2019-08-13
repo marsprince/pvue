@@ -1,5 +1,6 @@
 import { isReservedTag, parsePlatformTagName } from "../config/index";
-import { mount, Patch } from "../runtime/index";
+import { mount } from "../runtime/index";
+import { Patch } from "../../core/vdom/patch";
 import backend from "../backend";
 
 export function installPlatformConfig(target: any) {

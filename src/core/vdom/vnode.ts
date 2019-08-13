@@ -1,4 +1,4 @@
-import { IVNode, IVNodeData } from "../@types/vnode";
+import { IVNode, IVNodeData } from "../../@types/vnode";
 
 export default class VNode implements IVNode {
   constructor(

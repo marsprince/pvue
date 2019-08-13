@@ -1,12 +1,5 @@
-import { noop, bind } from "../../shared/utils";
+import { getSharedPropertyDefinition, bind } from "../../shared/utils";
 import { Vue } from "../index";
-
-const sharedPropertyDefinition = {
-  enumerable: true,
-  configurable: true,
-  get: noop,
-  set: noop
-};
 
 function getSourceObject(target: Object, sourceKey: string) {
   return sourceKey.split(".").reduce(function(pre, item) {
@@ -14,10 +7,15 @@ function getSourceObject(target: Object, sourceKey: string) {
   }, target);
 }
 
-function setSourceObject(target: Object, sourceKey: string, val: any) {
-  return sourceKey.split(".").reduce(function(pre, item, index, arr) {
+function setSourceObject(
+  target: Object,
+  sourceKey: string,
+  key: string,
+  val: any
+) {
+  sourceKey.split(".").reduce(function(pre, item, index, arr) {
     if (index === arr.length - 1) {
-      pre[item] = val;
+      pre[item][key] = val;
     }
     return pre[item];
   }, target);
@@ -28,15 +26,16 @@ export function proxy(
   key: string,
   isBind?: boolean
 ) {
+  const sharedPropertyDefinition = getSharedPropertyDefinition();
   sharedPropertyDefinition.get = function proxyGetter() {
     let result = getSourceObject(this, sourceKey)[key];
     if (isBind && typeof result === "function") {
-      bind(result, target);
+      result = bind(result, target);
     }
     return result;
   };
   sharedPropertyDefinition.set = function proxySetter(val) {
-    setSourceObject(this, sourceKey, val);
+    setSourceObject(this, sourceKey, key, val);
   };
   Object.defineProperty(target, key, sharedPropertyDefinition);
 }
