@@ -1,16 +1,24 @@
 import Vue from "../src/index";
 const app = new Vue({
-  template: '<div @click="onClick">{{content}}</div>',
+  template:
+    '<div @click="onClick"><div v-if="show">{{showContent}}</div><div v-else>{{notShowContent}}</div></div>',
   data() {
     return {
-      content: "渲染支持data双向绑定"
+      showContent: "展示",
+      notShowContent: "不展示",
+      show: false,
+      testSet: {
+        m: 111
+      },
+      count: 0
     };
   },
   methods: {
     onClick() {
-      this.content = "他改变了中国";
-      console.log(this);
-      console.log("click!");
+      if (this.show) {
+        this.notShowContent = Math.random();
+      }
+      this.show = true;
     }
   }
 });

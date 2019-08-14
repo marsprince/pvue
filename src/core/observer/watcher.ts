@@ -45,6 +45,7 @@ export class Watcher {
       throw e;
     } finally {
       watcherStack.popTarget();
+      this.cleanupDeps();
     }
     return value;
   }
@@ -64,5 +65,16 @@ export class Watcher {
   }
   run() {
     this.value = this.get();
+  }
+  cleanupDeps() {
+    // 要把原来的dep中有的，并且新dep中不存在的删除
+    for (let dep of this.deps) {
+      if (!this.newDeps.has(dep)) {
+        dep.removeSub(this);
+      }
+    }
+    // 互换依赖
+    [this.deps, this.newDeps] = [this.newDeps, this.deps];
+    this.newDeps.clear();
   }
 }

@@ -9,6 +9,7 @@
       "es6",
       "dom"
     ],
+    "downlevelIteration": true,
     "rootDir": "src",
     "moduleResolution": "node"
   }

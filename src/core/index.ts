@@ -8,6 +8,7 @@ import { IVNodeData, IVNode } from "../@types/vnode";
 import { createElement } from "./vdom/createElement";
 import { markStatic } from "./vdom/static";
 import { initMethods, initData } from "./init";
+import { set } from "../core/observer/methods";
 
 class Vue {
   // 合并后的options,只保留最原始的输入，没有任何响应式的东西
@@ -46,7 +47,7 @@ class Vue {
 
   // 调用render方法，把实例渲染成一个虚拟 Node，
   _render() {
-    return this.$options.render.call(this);
+    return this.$options.render.call(this, this.$createElement);
   }
 
   // 返回一个vnode
@@ -81,6 +82,12 @@ class Vue {
     markStatic(tree, `__static__${index}`);
     return tree;
   }
+
+  // $set
+  // 向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新。
+  static set = set;
+  // 别名
+  public $set = Vue.set;
 }
 
 // 安装一些render需要的别名
