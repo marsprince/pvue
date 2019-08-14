@@ -1,10 +1,14 @@
 import { isObject, hasOwn, defineProperty } from "../../shared/utils";
 import { defineReactive } from "./index";
+import { Dep } from "./dep";
 
 // 观察者
 export class Observer {
+  depForSet: Dep;
+  childOb: Observer;
   constructor(data: object) {
     this.init(data);
+    this.depForSet = new Dep();
   }
 
   init(data: object) {
@@ -20,7 +24,7 @@ export class Observer {
   walk(obj: any) {
     const keys = Object.keys(obj);
     for (let i = 0; i < keys.length; i++) {
-      defineReactive(obj, keys[i], obj[keys[i]]);
+      defineReactive(obj, keys[i]);
     }
   }
 }
