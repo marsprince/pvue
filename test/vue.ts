@@ -1,7 +1,7 @@
 import Vue from "../src/index";
 const app = new Vue({
   template:
-    '<div @click="onClick"><div v-if="show">{{showContent}}</div><div v-else>{{notShowContent}}</div></div>',
+    '<div @click="onClick"><div v-if="show">{{arr[0].a}}</div><div v-else>{{notShowContent}}</div></div>',
   data() {
     return {
       showContent: "展示",
@@ -10,15 +10,19 @@ const app = new Vue({
       testSet: {
         m: 111
       },
-      count: 0
+      arr: []
     };
   },
   methods: {
     onClick() {
-      if (this.show) {
-        this.notShowContent = Math.random();
+      // this.arr[0].a = Math.random();
+      if (this.arr.length === 0) {
+        this.$set(this.arr, "0", {});
+      } else {
+        this.$set(this.arr[0], "a", Math.random());
       }
       this.show = true;
+      console.log(this.arr);
     }
   }
 });
