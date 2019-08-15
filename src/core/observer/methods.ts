@@ -1,6 +1,17 @@
 import { defineReactive } from "./index";
 
-export function set(target: object, key: string, val: any) {
+export function set(target: object, key: string | number, val: any) {
+  // 如果是数组
+  if (Array.isArray(target)) {
+    target.length = Math.max(target.length, Number(key));
+    target.splice(Number(key), 1, val);
+    return val;
+  }
+  // 如果已经set过了,不能重新定义
+  if (key in target) {
+    target[key] = val;
+    return val;
+  }
   const ob = (target as any).__ob__;
   if (!ob) {
     target[key] = val;
