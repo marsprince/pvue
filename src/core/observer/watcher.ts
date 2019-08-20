@@ -1,5 +1,6 @@
 import { Dep } from "./dep";
 import { Vue } from "..";
+import { queueWatcher } from "./scheduler";
 
 class TargetStack<T> {
   target: T = null;
@@ -18,7 +19,7 @@ class TargetStack<T> {
 }
 
 export const watcherStack = new TargetStack<Watcher>();
-
+let id = 0;
 // 因为每次render都会触发收集，而每次依赖收集是有可能不一样的
 // 因此新建两个数组，一个depIds，一个newDepIds
 export class Watcher {
@@ -28,12 +29,14 @@ export class Watcher {
   getter: Function;
   value: any;
   vm: Vue;
+  id: number;
   constructor(vm: Vue, expOrFn: string | Function) {
     if (typeof expOrFn === "function") {
       this.getter = expOrFn;
     }
     this.vm = vm;
     this.value = this.get();
+    this.id = ++id;
   }
   get() {
     // 先要把当前watcher放到栈里
@@ -60,8 +63,8 @@ export class Watcher {
     }
   }
   update() {
-    // 去更新，先做一个同步
-    this.run();
+    // 异步更新
+    queueWatcher(this);
   }
   run() {
     this.value = this.get();

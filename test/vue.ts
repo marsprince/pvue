@@ -16,13 +16,14 @@ const app = new Vue({
   methods: {
     onClick() {
       // this.arr[0].a = Math.random();
-      if (this.arr.length === 0) {
-        this.$set(this.arr, "0", {});
-      } else {
-        this.$set(this.arr[0], "a", Math.random());
-      }
-      this.show = true;
-      console.log(this.arr);
+      // if (this.arr.length === 0) {
+      //   this.$set(this.arr, "0", {});
+      // } else {
+      //   this.$set(this.arr[0], "a", Math.random());
+      // }
+      this.notShowContent = Math.random();
+      this.notShowContent = Math.random();
+      this.notShowContent = Math.random();
     }
   }
 });
