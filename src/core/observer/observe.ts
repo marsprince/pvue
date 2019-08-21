@@ -1,5 +1,5 @@
 import { isObject, hasOwn, defineProperty } from "../../shared/utils";
-import { defineReactive } from "./index";
+import { defineReactive } from "./defineReactive";
 import { Dep } from "./dep";
 import { arrayBridgeProto } from "./array";
 

@@ -1,9 +1,11 @@
 import { Vue } from "../index";
 import { proxyMethods } from "../instance/proxy";
 import { warn } from "../../shared/log";
-import { hasOwn } from "../../shared/utils";
+import { hasOwn, noop } from "../../shared/utils";
 import { proxy } from "../instance/proxy";
 import { observe } from "../observer/observe";
+import { ComputedWatcher } from "../observer/watcher";
+import { defineComputed } from "../observer/defineReactive";
 
 export function initMethods(vm: Vue) {
   if (vm.$options.methods) proxyMethods(vm);
@@ -35,4 +37,23 @@ export function initData(vm: Vue) {
 
   // observe
   observe(data);
+}
+
+export function initComputed(vm: Vue) {
+  // computed支持两种方式，函数和包含get和set的对象
+  const { computed } = vm.$options;
+  if (computed) {
+    const watchers = (vm._computedWatchers = Object.create(null));
+    for (const key in computed) {
+      const userDef = computed[key];
+      const getter = typeof userDef === "function" ? userDef : userDef.get;
+      // 创建一个新的watcher
+      // 这个watcher有什么不同？
+      // 不会立即触发get函数，只有在依赖收集触发get的时候触发
+      watchers[key] = new ComputedWatcher(vm, getter || noop);
+      if (!(key in vm)) {
+        defineComputed(vm, key, userDef);
+      }
+    }
+  }
 }

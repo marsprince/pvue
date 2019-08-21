@@ -1,6 +1,8 @@
 import { Dep } from "./dep";
 import { getSharedPropertyDefinition } from "../../shared/utils";
 import { observe } from "./observe";
+import { noop } from "../../shared/utils/index";
+import { watcherStack } from "./watcher";
 
 function dependArray(value: Array<any>) {
   // 对数组的每一项都要做depend
@@ -68,4 +70,31 @@ export function defineReactive(obj: object, key: string | number, val?: any) {
     dep.notify();
   };
   Object.defineProperty(obj, key, sharedPropertyDefinition);
+}
+
+export function defineComputed(
+  target: any,
+  key: string,
+  userDef: Object | Function
+) {
+  const sharedPropertyDefinition = getSharedPropertyDefinition();
+  if (typeof userDef === "function") {
+    sharedPropertyDefinition.get = function() {
+      const watcher = this._computedWatchers && this._computedWatchers[key];
+      if (watcher) {
+        // 如果没有get过，get一把
+        if (!watcher.isGet) {
+          watcher.evaluate();
+        }
+        watcher.computedDep.depend();
+        // // 如果是处于渲染watcher，那么要做依赖收集,将computed依赖的与渲染挂上钩
+        // if (watcherStack.getCurrentTarget()) {
+        //   watcher.depend();
+        // }
+        return watcher.value;
+      }
+    };
+    sharedPropertyDefinition.set = noop;
+  }
+  Object.defineProperty(target, key, sharedPropertyDefinition);
 }

@@ -16,6 +16,7 @@ class Scheduler {
     }
   }
 
+  // watcher的添加顺序，computed => watcher => render
   flushSchedulerQueue() {
     for (let watcher of this.queue) {
       this.queue.delete(watcher);

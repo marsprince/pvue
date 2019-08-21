@@ -1,4 +1,4 @@
-import { defineReactive } from "./index";
+import { defineReactive } from "./defineReactive";
 
 export function set(target: object, key: string | number, val: any) {
   // 如果是数组
