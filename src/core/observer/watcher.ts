@@ -21,8 +21,8 @@ class TargetStack<T> {
 export const watcherStack = new TargetStack<Watcher>();
 let id = 0;
 // 因为每次render都会触发收集，而每次依赖收集是有可能不一样的
-// 因此新建两个数组，一个depIds，一个newDepIds
-export class Watcher {
+// 因此新建两个数组，一个deps，一个newDeps
+class BaseWatcher {
   deps: Set<Dep> = new Set();
   newDeps: Set<Dep> = new Set();
   // 传进来的重新渲染需要的函数或者字符串表达式
@@ -30,12 +30,13 @@ export class Watcher {
   value: any;
   vm: Vue;
   id: number;
+  // 代表运行过get进行依赖收集
+  isGet: boolean = false;
   constructor(vm: Vue, expOrFn: string | Function) {
     if (typeof expOrFn === "function") {
       this.getter = expOrFn;
     }
     this.vm = vm;
-    this.value = this.get();
     this.id = ++id;
   }
   get() {
@@ -50,6 +51,7 @@ export class Watcher {
       watcherStack.popTarget();
       this.cleanupDeps();
     }
+    this.isGet = true;
     return value;
   }
   addDep(dep: Dep) {
@@ -67,6 +69,7 @@ export class Watcher {
     queueWatcher(this);
   }
   run() {
+    console.log(this, "run");
     this.value = this.get();
   }
   cleanupDeps() {
@@ -79,5 +82,32 @@ export class Watcher {
     // 互换依赖
     [this.deps, this.newDeps] = [this.newDeps, this.deps];
     this.newDeps.clear();
+  }
+}
+export class Watcher extends BaseWatcher {
+  constructor(vm: Vue, expOrFn: string | Function) {
+    super(vm, expOrFn);
+    // 立即触发get
+    this.value = this.get();
+  }
+}
+
+export class ComputedWatcher extends BaseWatcher {
+  computedDep = new Dep();
+  evaluate() {
+    this.value = this.get();
+  }
+  // depend() {
+  //   for (let dep of this.deps) {
+  //     dep.depend();
+  //   }
+  // }
+  run() {
+    const oldValue = this.value;
+    const newValue = this.get();
+    if (oldValue !== newValue) {
+      this.value = newValue;
+      this.computedDep.notify();
+    }
   }
 }

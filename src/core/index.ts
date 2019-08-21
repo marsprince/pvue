@@ -7,8 +7,9 @@ import { installRenderHelpers } from "./helpers";
 import { IVNodeData, IVNode } from "../@types/vnode";
 import { createElement } from "./vdom/createElement";
 import { markStatic } from "./vdom/static";
-import { initMethods, initData } from "./init";
+import { initMethods, initData, initComputed } from "./init";
 import { set } from "../core/observer/methods";
+import { nextTick } from "./util/nextTick";
 
 class Vue {
   // 合并后的options,只保留最原始的输入，没有任何响应式的东西
@@ -19,6 +20,8 @@ class Vue {
   _vnode: IVNode;
   // data函数返回的data
   _data: object;
+  // computedWatcher
+  _computedWatchers: any;
 
   constructor(options: object) {
     this._init(options);
@@ -31,6 +34,8 @@ class Vue {
     initMethods(this);
     // 初始化data
     initData(this);
+    // 初始化computed
+    initComputed(this);
   }
 
   // 将vnode渲染并挂载
@@ -87,7 +92,10 @@ class Vue {
   // 向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新。
   static set = set;
   // 别名
-  public $set = Vue.set;
+  public $set = set;
+  // $nexttick
+  static nextTick = nextTick;
+  public $nextTick = nextTick.bind(this);
 }
 
 // 安装一些render需要的别名
