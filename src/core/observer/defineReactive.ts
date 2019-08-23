@@ -87,10 +87,10 @@ export function defineComputed(
           watcher.evaluate();
         }
         watcher.computedDep.depend();
-        // // 如果是处于渲染watcher，那么要做依赖收集,将computed依赖的与渲染挂上钩
-        // if (watcherStack.getCurrentTarget()) {
-        //   watcher.depend();
-        // }
+        // 如果是处于渲染watcher，那么要做依赖收集,将computed依赖的与渲染挂上钩
+        if (watcherStack.getCurrentTarget()) {
+          watcher.depend();
+        }
         return watcher.value;
       }
     };

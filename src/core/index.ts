@@ -7,8 +7,8 @@ import { installRenderHelpers } from "./helpers";
 import { IVNodeData, IVNode } from "../@types/vnode";
 import { createElement } from "./vdom/createElement";
 import { markStatic } from "./vdom/static";
-import { initMethods, initData, initComputed } from "./init";
-import { set } from "../core/observer/methods";
+import { initMethods, initData, initComputed, initWatch } from "./init";
+import { set, watch } from "../core/observer/methods";
 import { nextTick } from "./util/nextTick";
 
 class Vue {
@@ -36,6 +36,7 @@ class Vue {
     initData(this);
     // 初始化computed
     initComputed(this);
+    initWatch(this);
   }
 
   // 将vnode渲染并挂载
@@ -96,6 +97,7 @@ class Vue {
   // $nexttick
   static nextTick = nextTick;
   public $nextTick = nextTick.bind(this);
+  public $watch = watch.bind(this);
 }
 
 // 安装一些render需要的别名
