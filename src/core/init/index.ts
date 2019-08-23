@@ -1,11 +1,12 @@
 import { Vue } from "../index";
 import { proxyMethods } from "../instance/proxy";
 import { warn } from "../../shared/log";
-import { hasOwn, noop } from "../../shared/utils";
+import { hasOwn, noop, isPlainObject } from "../../shared/utils";
 import { proxy } from "../instance/proxy";
 import { observe } from "../observer/observe";
 import { ComputedWatcher } from "../observer/watcher";
 import { defineComputed } from "../observer/defineReactive";
+import { IWatcherOptions } from "../../@types/observer";
 
 export function initMethods(vm: Vue) {
   if (vm.$options.methods) proxyMethods(vm);
@@ -54,6 +55,38 @@ export function initComputed(vm: Vue) {
       if (!(key in vm)) {
         defineComputed(vm, key, userDef);
       }
+    }
+  }
+}
+
+export function createWatcher(
+  vm: Vue,
+  expOrFn: string | Function,
+  handler: any,
+  options: IWatcherOptions = {}
+) {
+  // 如果是个对象，则作为options
+  if (isPlainObject(handler)) {
+    options = handler;
+    handler = handler.handler;
+  }
+  // handler也可以是字符串
+  if (typeof handler === "string") {
+    handler = vm[handler];
+  }
+  return vm.$watch(expOrFn, handler, options);
+}
+
+export function initWatch(vm: Vue) {
+  const { watch } = vm.$options;
+  for (let key in watch) {
+    const handler = watch[key];
+    if (Array.isArray(handler)) {
+      for (let i = 0; i < handler.length; i++) {
+        createWatcher(vm, key, handler[i]);
+      }
+    } else {
+      createWatcher(vm, key, handler);
     }
   }
 }

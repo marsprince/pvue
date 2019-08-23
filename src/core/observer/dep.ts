@@ -20,6 +20,7 @@ export class Dep {
     const target = watcherStack.getCurrentTarget();
     if (target) {
       target.addDep(this);
+      // console.log(target, this);
     }
   }
   notify() {
