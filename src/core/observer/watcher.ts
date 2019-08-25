@@ -37,6 +37,7 @@ class BaseWatcher {
   // 代表运行过get进行依赖收集
   isGet: boolean = false;
   options: IWatcherOptions;
+  isRenderWatcher: boolean = false;
 
   constructor(
     vm: Vue,

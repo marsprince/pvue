@@ -10,6 +10,10 @@ import { markStatic } from "./vdom/static";
 import { initMethods, initData, initComputed, initWatch } from "./init";
 import { set, watch } from "../core/observer/methods";
 import { nextTick } from "./util/nextTick";
+import { callHook } from "./instance/lifeCycle";
+import { initVueConfig } from "./instance/init";
+import { mergeOptions } from "./util/options";
+import { Watcher } from "./observer/watcher";
 
 class Vue {
   // 合并后的options,只保留最原始的输入，没有任何响应式的东西
@@ -22,6 +26,12 @@ class Vue {
   _data: object;
   // computedWatcher
   _computedWatchers: any;
+  // renderWatcher
+  _watcher: Watcher = null;
+  // vue内部的options
+  static options: any = {};
+  // 静态config对象
+  static config: any = {};
 
   constructor(options: object) {
     this._init(options);
@@ -29,7 +39,14 @@ class Vue {
 
   _init(options: object) {
     // 复杂的合并规则
-    this.$options = options || {};
+    this.$options = mergeOptions(Vue.options, options, this);
+    // beforeCreate，这时候是把vue自身的东西挂载完毕
+    callHook(this, "beforeCreate");
+    this._initOptions();
+    callHook(this, "created");
+  }
+
+  _initOptions() {
     // 初始化方法
     initMethods(this);
     // 初始化data
@@ -71,8 +88,6 @@ class Vue {
 
   $mount: Function;
   __patch__: Function;
-  // 静态对象
-  static config: any = {};
 
   // 静态树与静态渲染
   _staticTrees: null | any;
@@ -99,7 +114,8 @@ class Vue {
   public $nextTick = nextTick.bind(this);
   public $watch = watch.bind(this);
 }
-
+// 安装vue.config
+initVueConfig(Vue);
 // 安装一些render需要的别名
 installRenderHelpers(Vue.prototype);
 // 安装一些平台相关的设置
