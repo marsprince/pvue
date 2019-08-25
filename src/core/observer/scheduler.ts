@@ -1,5 +1,6 @@
 import { Watcher } from "./watcher";
 import { nextTick } from "../util/nextTick";
+import { callHook } from "../instance/lifeCycle";
 
 class Scheduler {
   has: {};
@@ -18,15 +19,30 @@ class Scheduler {
 
   // watcher的添加顺序，computed => watcher => render
   flushSchedulerQueue() {
+    const updatedQueue = new Set([...this.queue]);
     for (let watcher of this.queue) {
+      if (watcher.isRenderWatcher) {
+        callHook(watcher.vm, "beforeUpdate");
+      }
       this.queue.delete(watcher);
       watcher.run();
     }
+    this.callUpdatedHooks(updatedQueue);
     this.resetSchedulerState();
   }
 
   resetSchedulerState() {
     this.queue.clear();
+  }
+
+  callUpdatedHooks(updatedQueue: Set<any>) {
+    for (let watcher of updatedQueue) {
+      const vm = watcher.vm;
+      // 确保只有renderWatcher的触发会引起updated
+      if (watcher.isRenderWatcher) {
+        callHook(vm, "updated");
+      }
+    }
   }
 }
 

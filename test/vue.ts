@@ -1,7 +1,7 @@
 import Vue from "../src/index";
 const app = new Vue({
   template:
-    '<div @click="onClick"><div v-if="show">{{arr[0].a}}</div><div v-else>12</div></div>',
+    '<div @click="onClick"><div v-if="show">{{arr[0].a}}</div><div v-else>{{a.b.c}}</div></div>',
   data() {
     return {
       // showContent: "展示",
@@ -33,6 +33,25 @@ const app = new Vue({
       // }
       this.a.b.c = Math.random();
     }
+  },
+  // 生命周期
+  beforeCreate() {
+    console.log("beforeCreate", JSON.parse(JSON.stringify(this)));
+  },
+  created() {
+    console.log("created", JSON.parse(JSON.stringify(this)));
+  },
+  beforeMount() {
+    console.log("beforeMount", JSON.parse(JSON.stringify(this)));
+  },
+  mounted() {
+    console.log("mounted", this);
+  },
+  beforeUpdate() {
+    console.log("beforeUpdate", this);
+  },
+  updated() {
+    console.log("updated", this);
   }
 });
 
