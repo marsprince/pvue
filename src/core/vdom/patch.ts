@@ -1,7 +1,7 @@
 import { IVNode } from "../../@types/vnode";
 import { isUndef, isDef } from "../../shared/utils";
 import { Hooks } from "../../platforms/backend/modules/hooks.enum";
-import { createEmptyNode } from "../../core/vdom/vnode";
+import VNode, { createUseLessVNode } from "../../core/vdom/vnode";
 
 function sameVnode(a, b) {
   return (
@@ -47,8 +47,11 @@ export class Patch {
       this.createChildren(vnode, children);
       // 激活对应的hook
       if (isDef(vnode.data)) {
-        this.invokeHooks(Hooks.Create, createEmptyNode(), vnode);
+        this.invokeHooks(Hooks.Create, createUseLessVNode(), vnode);
       }
+      this.insert(parentElm, vnode.elm);
+    } else if (vnode.isComment) {
+      vnode.elm = nodeOps.createComment(vnode.text);
       this.insert(parentElm, vnode.elm);
     } else {
       vnode.elm = nodeOps.createTextNode(vnode.text);
@@ -101,18 +104,34 @@ export class Patch {
     }
   }
 
-  patch(oldVnode: IVNode, vnode: IVNode) {
-    // 如果新节点存在且老节点不存在
-    //
+  // 新建一个空节点，并设置这个节点的elm唯传入的真实Dom
+  emptyNodeAt(elm: Element) {
+    let node = new VNode(this.nodeOps.tagName(elm).toLowerCase(), {}, []);
+    node.elm = elm;
+    return node;
+  }
 
+  patch(oldVnode: IVNode | Element, vnode: IVNode) {
+    // 如果新节点存在且老节点不存在
     if (isUndef(oldVnode)) {
       // 如果老节点不存在
       this.createElm(vnode);
     } else {
+      // 检查是否是真实dom节点
+      const isRealElement = !(oldVnode instanceof VNode);
       // 两个都存在，并且是相同节点
-      if (sameVnode(oldVnode, vnode)) {
+      if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // 进入节点的patch流程
-        this.patchVnode(oldVnode, vnode);
+        this.patchVnode(oldVnode as IVNode, vnode);
+      } else {
+        // 如果是真实节点
+        if (isRealElement) {
+          oldVnode = this.emptyNodeAt(oldVnode as Element);
+        }
+        // 如果不是相同节点，走新建流程
+        const oldElm = (oldVnode as IVNode).elm;
+        const parentElm = this.nodeOps.parentNode(oldElm);
+        this.createElm(vnode, parentElm);
       }
     }
     return vnode.elm;

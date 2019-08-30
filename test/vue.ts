@@ -1,4 +1,4 @@
-import Vue from "../src/index";
+import { templateVue as Vue } from "../src/index";
 const app = new Vue({
   template:
     '<div @click="onClick"><div v-if="show">{{arr[0].a}}</div><div v-else>{{a.b.c}}</div></div>',

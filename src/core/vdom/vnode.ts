@@ -1,6 +1,9 @@
 import { IVNode, IVNodeData } from "../../@types/vnode";
 
 export default class VNode implements IVNode {
+  public elm;
+  public isComment;
+
   constructor(
     public tag?: string,
     public data?: IVNodeData,
@@ -13,6 +16,13 @@ export function createTextVNode(val: string | number) {
   return new VNode(undefined, undefined, undefined, String(val));
 }
 
-export function createEmptyNode() {
+export function createEmptyVNode(text?: string) {
+  const node = new VNode();
+  node.text = text;
+  node.isComment = true;
+  return node;
+}
+
+export function createUseLessVNode() {
   return new VNode("", {}, []);
 }

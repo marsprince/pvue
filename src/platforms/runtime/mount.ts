@@ -1,6 +1,6 @@
 import { compileToFunctions } from "../../compiler/index";
-import { Watcher } from "../../core/observer/watcher";
-import { callHook } from "../../core/instance/lifeCycle";
+import { query, inBrowser } from "../utils";
+import { mountComponent } from "../../core/instance/lifeCycle";
 
 // 挂载，和平台有关
 export function mount(el: any) {
@@ -11,19 +11,10 @@ export function mount(el: any) {
   options.staticRenderFns = ref.staticRenderFns;
   console.log(ref.render.toString(), ref.staticRenderFns.toString());
 
-  callHook(this, "beforeMount");
-  // 渲染
-  // 增加watcher
-  const renderWatcher = new Watcher(this, () => {
-    this._update(this._render());
-  });
-  renderWatcher.isRenderWatcher = true;
-  this._watcher = renderWatcher;
+  return runTimeMount.call(this, el);
+}
 
-  callHook(this, "mounted");
-
-  // 挂载
-  if (typeof el === "string") {
-    document.querySelector(el).append(this.$el);
-  }
+export function runTimeMount(el: any) {
+  el = el && inBrowser ? query(el) : undefined;
+  return mountComponent.call(this, el);
 }

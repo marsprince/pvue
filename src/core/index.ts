@@ -7,15 +7,20 @@ import { installRenderHelpers } from "./helpers";
 import { IVNodeData, IVNode } from "../@types/vnode";
 import { createElement } from "./vdom/createElement";
 import { markStatic } from "./vdom/static";
-import { initMethods, initData, initComputed, initWatch } from "./init";
+import {
+  initMethods,
+  initData,
+  initComputed,
+  initWatch
+} from "./init/initVueInstance";
 import { set, watch } from "../core/observer/methods";
 import { nextTick } from "./util/nextTick";
 import { callHook } from "./instance/lifeCycle";
-import { initVueConfig } from "./instance/init";
+import { initVueConfig } from "./init/initVueConstructor";
 import { mergeOptions } from "./util/options";
 import { Watcher } from "./observer/watcher";
 
-class Vue {
+export class Vue {
   // 合并后的options,只保留最原始的输入，没有任何响应式的东西
   $options: any = {};
   // dom节点
@@ -114,6 +119,8 @@ class Vue {
   public $nextTick = nextTick.bind(this);
   public $watch = watch.bind(this);
 }
+export class runtimeVue extends Vue {}
+export class templateVue extends Vue {}
 // 安装vue.config
 initVueConfig(Vue);
 // 安装一些render需要的别名
@@ -121,6 +128,6 @@ installRenderHelpers(Vue.prototype);
 // 安装一些平台相关的设置
 installPlatformConfig(Vue);
 // 安装一些平台相关的方法
-installPlatformFunction(Vue.prototype);
-
-export { Vue };
+installPlatformFunction(runtimeVue.prototype, true);
+// 包含template的vue
+installPlatformFunction(templateVue.prototype);
