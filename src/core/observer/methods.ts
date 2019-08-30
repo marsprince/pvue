@@ -2,7 +2,7 @@ import { defineReactive } from "./defineReactive";
 import { Watcher } from "./watcher";
 import { IWatcherOptions } from "../../@types/observer";
 import { isPlainObject } from "../../shared/utils";
-import { createWatcher } from "../init";
+import { createWatcher } from "../init/initVueInstance";
 
 export function set(target: object, key: string | number, val: any) {
   // 如果是数组

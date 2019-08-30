@@ -13,6 +13,8 @@ export interface IVNode {
   isStatic?: boolean;
   key?: string | number;
   isOnce?: boolean;
+  // 是否是注释
+  isComment?: boolean;
 }
 
 export interface IVNodeData {
