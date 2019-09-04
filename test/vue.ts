@@ -18,6 +18,11 @@ const app = new Vue({
       }
     };
   },
+  // computed: {
+  //   com() {
+  //     return this.a.b.c + 2;
+  //   }
+  // },
   // watch: {
   //   "a.b.c": function(newVal, oldVal) {
   //     console.log(newVal, oldVal);

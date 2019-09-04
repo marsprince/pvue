@@ -86,7 +86,7 @@ export function defineComputed(
         if (!watcher.isGet) {
           watcher.evaluate();
         }
-        watcher.computedDep.depend();
+        // watcher.computedDep.depend();
         // 如果是处于渲染watcher，那么要做依赖收集,将computed依赖的与渲染挂上钩
         if (watcherStack.getCurrentTarget()) {
           watcher.depend();
