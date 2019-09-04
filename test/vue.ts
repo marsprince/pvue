@@ -65,3 +65,19 @@ app.$watch(
     deep: true
   }
 );
+
+let x = Vue.component("x", {
+  data() {
+    return {
+      a: 1
+    };
+  }
+});
+let y = Vue.component("y", {
+  data() {
+    return {
+      a: 1
+    };
+  }
+});
+console.log(x.options, y.options);

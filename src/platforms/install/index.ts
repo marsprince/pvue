@@ -14,7 +14,6 @@ export function installPlatformFunction(
   target: any,
   isRuntime: boolean = false
 ): typeof Vue {
-  console.log(target);
   if (isRuntime) {
     target.$mount = runTimeMount;
   } else {
