@@ -137,7 +137,7 @@ export class Watcher extends BaseWatcher {
 }
 
 export class ComputedWatcher extends BaseWatcher {
-  computedDep = new Dep();
+  // computedDep = new Dep();
   evaluate() {
     this.value = this.get();
   }
