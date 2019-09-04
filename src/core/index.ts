@@ -19,6 +19,9 @@ import { callHook } from "./instance/lifeCycle";
 import { initVueConfig } from "./init/initVueConstructor";
 import { mergeOptions } from "./util/options";
 import { Watcher } from "./observer/watcher";
+import { extend, component } from "./methods/index";
+
+import { ComponentOptions, IVueOptions } from "../@types/vue";
 
 export class Vue {
   // 合并后的options,只保留最原始的输入，没有任何响应式的东西
@@ -33,12 +36,23 @@ export class Vue {
   _computedWatchers: any;
   // renderWatcher
   _watcher: Watcher = null;
-  // vue内部的options
-  static options: any = {};
+  //全局的options,用来挂全局的ASSET_TYPES = [
+  //'component',
+  //'directive',
+  //'filter'
+  //]
+  // 会和每个组件进行merge
+  static options: IVueOptions = {
+    components: Object.create(null),
+    directives: Object.create(null),
+    filters: Object.create(null)
+  };
   // 静态config对象
   static config: any = {};
+  // cid
+  static cid = 0;
 
-  constructor(options: object) {
+  constructor(options: ComponentOptions) {
     this._init(options);
   }
 
@@ -118,16 +132,31 @@ export class Vue {
   static nextTick = nextTick;
   public $nextTick = nextTick.bind(this);
   public $watch = watch.bind(this);
+  static extend = extend;
+  static component = component;
 }
 export class runtimeVue extends Vue {}
 export class templateVue extends Vue {}
-// 安装vue.config
+// 安装Vue.config上的一些默认值
 initVueConfig(Vue);
 // 安装一些render需要的别名
 installRenderHelpers(Vue.prototype);
 // 安装一些平台相关的设置
 installPlatformConfig(Vue);
-// 安装一些平台相关的方法
+
+// 安装两个版本的vue
 installPlatformFunction(runtimeVue.prototype, true);
-// 包含template的vue
 installPlatformFunction(templateVue.prototype);
+
+// VUE组件和vue的异同
+// 不接受el
+// data只能是函数
+// 会进行缓存
+// 拥有独立的options
+// 动态继承
+export function VueComponent() {
+  class vueComponent extends Vue {
+    static super: typeof Vue;
+  }
+  return vueComponent;
+}

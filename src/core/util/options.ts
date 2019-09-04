@@ -1,4 +1,5 @@
 import { hasOwn } from "../../shared/utils";
+import { Vue } from "../index";
 /**
  * Default strategy.
  */
@@ -33,12 +34,16 @@ export function mergeHook(
   return res ? dedupeHooks(res) : res;
 }
 
-export function mergeOptions(parent: any, child: any, vm: any) {
+export function mergeOptions(parent: any, child: any, vm?: any) {
   if (typeof child === "function") {
     child = child.options;
   }
   const options = {};
-  const strats = vm.constructor.config.optionMergeStrategies;
+  const strats = Vue.config.optionMergeStrategies;
+  for (let key in parent) {
+    const strat = strats[key] || defaultStrat;
+    mergeField(key, parent, child, options, strat);
+  }
   for (let key in child) {
     if (!hasOwn(parent, key)) {
       const strat = strats[key] || defaultStrat;
