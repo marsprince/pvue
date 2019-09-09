@@ -1,8 +1,4 @@
-import { defineReactive } from "./defineReactive";
-import { Watcher } from "./watcher";
-import { IWatcherOptions } from "../../@types/observer";
-import { isPlainObject } from "../../shared/utils";
-import { createWatcher } from "../init/initVueInstance";
+import { defineReactive } from "../observer/defineReactive";
 
 export function set(target: object, key: string | number, val: any) {
   // 如果是数组
@@ -27,25 +23,4 @@ export function set(target: object, key: string | number, val: any) {
   // 每一层有一个ob，对应一个dep
   defineReactive(target, key, val);
   ob.depForSet.notify();
-}
-
-export function watch(
-  expOrFn: string | Function,
-  cb: any,
-  options: IWatcherOptions = {}
-) {
-  // key可以是a.b.c，或者是一个func
-  // cb可以是对象或者函数
-  let watcher;
-  if (isPlainObject(cb)) {
-    return createWatcher(this, expOrFn, cb, options);
-  } else {
-    watcher = new Watcher(this, expOrFn, cb, options);
-  }
-  if (options.immediate) {
-    cb.call(this, watcher.value);
-  }
-  return function() {
-    watcher.teardown();
-  };
 }
