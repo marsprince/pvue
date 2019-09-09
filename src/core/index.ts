@@ -13,13 +13,12 @@ import {
   initComputed,
   initWatch
 } from "./init/initVueInstance";
-import { set, watch } from "../core/observer/methods";
 import { nextTick } from "./util/nextTick";
 import { callHook } from "./instance/lifeCycle";
 import { initVueConfig } from "./init/initVueConstructor";
 import { mergeOptions } from "./util/options";
 import { Watcher } from "./observer/watcher";
-import { extend, component } from "./methods/index";
+import { extend, component, set, watch, destroy } from "./methods/index";
 
 import { ComponentOptions, IVueOptions } from "../@types/vue";
 
@@ -36,6 +35,10 @@ export class Vue {
   _computedWatchers: any;
   // renderWatcher
   _watcher: Watcher = null;
+  // allWatcher
+  _watchers: Array<Watcher> = [];
+  _isDestroyed: boolean = false;
+  _isBeingDestroyed: boolean = false;
   //全局的options,用来挂全局的ASSET_TYPES = [
   //'component',
   //'directive',
@@ -134,6 +137,7 @@ export class Vue {
   public $watch = watch.bind(this);
   static extend = extend;
   static component = component;
+  public $destroy = destroy.bind(this);
 }
 export class runtimeVue extends Vue {}
 export class templateVue extends Vue {}

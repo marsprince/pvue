@@ -56,6 +56,7 @@ class BaseWatcher {
     this.id = ++id;
     this.cb = cb;
     this.options = options;
+    vm._watchers.push(this);
   }
   // get返回的是一个计算值，如果是字符串，那么会返回vm.a，是个引用
   get() {
@@ -124,6 +125,8 @@ class BaseWatcher {
     }
   }
 }
+
+// renderWatcher
 export class Watcher extends BaseWatcher {
   constructor(
     vm: Vue,
