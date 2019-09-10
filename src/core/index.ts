@@ -18,11 +18,20 @@ import { callHook } from "./instance/lifeCycle";
 import { initVueConfig } from "./init/initVueConstructor";
 import { mergeOptions } from "./util/options";
 import { Watcher } from "./observer/watcher";
-import { extend, component, set, watch, destroy } from "./methods/index";
+import {
+  extend,
+  component,
+  set,
+  watch,
+  destroy,
+  forceUpdate
+} from "./methods/index";
 
 import { ComponentOptions, IVueOptions } from "../@types/vue";
 
 export class Vue {
+  // instance props
+
   // 合并后的options,只保留最原始的输入，没有任何响应式的东西
   $options: any = {};
   // dom节点
@@ -39,6 +48,9 @@ export class Vue {
   _watchers: Array<Watcher> = [];
   _isDestroyed: boolean = false;
   _isBeingDestroyed: boolean = false;
+
+  // static props
+
   //全局的options,用来挂全局的ASSET_TYPES = [
   //'component',
   //'directive',
@@ -125,19 +137,20 @@ export class Vue {
     markStatic(tree, `__static__${index}`);
     return tree;
   }
-
+  // static method
+  static nextTick = nextTick;
+  static extend = extend;
+  static component = component;
   // $set
   // 向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新。
   static set = set;
-  // 别名
-  public $set = set;
-  // $nexttick
-  static nextTick = nextTick;
+
+  // instance method
   public $nextTick = nextTick.bind(this);
   public $watch = watch.bind(this);
-  static extend = extend;
-  static component = component;
   public $destroy = destroy.bind(this);
+  public $forceUpdate = forceUpdate.bind(this);
+  public $set = set;
 }
 export class runtimeVue extends Vue {}
 export class templateVue extends Vue {}
