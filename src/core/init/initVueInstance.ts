@@ -29,6 +29,11 @@ export function initData(vm: Vue) {
   }
   // 这里会判断data和props,methods不能重复，不写了
   vm._data = data || {};
+  Object.defineProperty(vm, "$data", {
+    get() {
+      return this._data;
+    }
+  });
   // 将_data挂到vm上
   for (let key in data) {
     if (hasOwn(data, key)) {
