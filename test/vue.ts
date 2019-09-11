@@ -85,4 +85,12 @@ let y = Vue.component("y", {
     };
   }
 });
-console.log(x.options, y.options);
+// console.log(x.options, y.options);
+app.$on("test", function(msg) {
+  console.log(msg);
+});
+// app.$emit("test", "hi");
+// => "hi"
+// app.$emit("test", "hi");
+// app.$off("test");
+// // app.$emit("test", "hi");

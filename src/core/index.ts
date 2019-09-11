@@ -24,7 +24,11 @@ import {
   set,
   watch,
   destroy,
-  forceUpdate
+  forceUpdate,
+  on,
+  emit,
+  off,
+  once
 } from "./methods/index";
 
 import { ComponentOptions, IVueOptions } from "../@types/vue";
@@ -39,7 +43,8 @@ export class Vue {
   // 当前组件对应的vnode
   _vnode: IVNode;
   // data函数返回的data
-  _data: object;
+  _data: object = {};
+  $data: object = {};
   // computedWatcher
   _computedWatchers: any;
   // renderWatcher
@@ -48,6 +53,9 @@ export class Vue {
   _watchers: Array<Watcher> = [];
   _isDestroyed: boolean = false;
   _isBeingDestroyed: boolean = false;
+  // 是否包含类似 hook: updated 的事件，如果不包含的话，在callHook的时候就不会emit对应事件
+  _hasHookEvent: false;
+  _events: any = {};
 
   // static props
 
@@ -151,6 +159,10 @@ export class Vue {
   public $destroy = destroy.bind(this);
   public $forceUpdate = forceUpdate.bind(this);
   public $set = set;
+  public $on = on.bind(this);
+  public $emit = emit.bind(this);
+  public $off = off.bind(this);
+  public $once = once.bind(this);
 }
 export class runtimeVue extends Vue {}
 export class templateVue extends Vue {}
