@@ -4,7 +4,7 @@ import { mergeOptions } from "../util/options";
 
 let cid = 1;
 
-export function extend(extendOptions: ComponentOptions) {
+export function extend(extendOptions: ComponentOptions, ctor?: any) {
   extendOptions = extendOptions || {};
   const Super = this;
   const SuperId = Super.cid;
@@ -15,7 +15,8 @@ export function extend(extendOptions: ComponentOptions) {
   }
   // 组件名
   const name = extendOptions.name || Super.options.name;
-  const Sub = VueComponent();
+  // 默认vue，需要template的时候传进来
+  const Sub = VueComponent(ctor || this);
   // cid
   Sub.cid = cid++;
   // 合并配置

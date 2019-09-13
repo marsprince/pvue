@@ -1,6 +1,8 @@
 import { IVNodeData } from "../../@types/vnode";
 import { Vue } from "../index";
 import VNode from "./vnode";
+import { resolveAsset } from "../util/options";
+import { createComponent } from "./createComponent";
 
 // 外界调用的,初始化逻辑移出
 export function createElement(tag?: any, data?: IVNodeData, children?: any) {
@@ -16,6 +18,10 @@ export function createElement(tag?: any, data?: IVNodeData, children?: any) {
     if (Vue.config.isReservedTag(tag)) {
       vnode = new VNode(Vue.config.parsePlatformTagName(tag), data, children);
       vnode.context = this;
+    } else if (resolveAsset(this.$options, "components", tag)) {
+      const Ctor = resolveAsset(this.$options, "components", tag);
+      // createComponent
+      vnode = createComponent(Ctor, this, data, children, tag);
     }
   }
   return vnode;

@@ -78,3 +78,33 @@ export function remove(arr: Array<any>, item: any): Array<any> | void {
     }
   }
 }
+
+/**
+ * Create a cached version of a pure function.
+ */
+export function cached(fn: Function): Function {
+  const cache = Object.create(null);
+  return function cachedFn(str: string) {
+    const hit = cache[str];
+    return hit || (cache[str] = fn(str));
+  };
+}
+
+/**
+ * Camelize a hyphen-delimited string.
+ */
+const camelizeRE = /-(\w)/g;
+export const camelize = cached(
+  (str: string): string => {
+    return str.replace(camelizeRE, (_, c) => (c ? c.toUpperCase() : ""));
+  }
+);
+
+/**
+ * Capitalize a string.
+ */
+export const capitalize = cached(
+  (str: string): string => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+);

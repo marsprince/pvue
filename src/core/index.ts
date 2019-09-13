@@ -66,6 +66,7 @@ export class Vue {
   //]
   // 会和每个组件进行merge
   static options: IVueOptions = {
+    _base: Vue,
     components: Object.create(null),
     directives: Object.create(null),
     filters: Object.create(null)
@@ -81,11 +82,19 @@ export class Vue {
 
   _init(options: object) {
     // 复杂的合并规则
-    this.$options = mergeOptions(Vue.options, options, this);
+    this.$options = mergeOptions(
+      (this.constructor as any).options,
+      options,
+      this
+    );
     // beforeCreate，这时候是把vue自身的东西挂载完毕
     callHook(this, "beforeCreate");
     this._initOptions();
     callHook(this, "created");
+    // 如果有el自动进入挂载流程
+    if (this.$options.el) {
+      this.$mount(this.$options.el);
+    }
   }
 
   _initOptions() {
@@ -183,9 +192,9 @@ installPlatformFunction(templateVue.prototype);
 // 会进行缓存
 // 拥有独立的options
 // 动态继承
-export function VueComponent() {
-  class vueComponent extends Vue {
-    static super: typeof Vue;
+export function VueComponent(vue) {
+  class vueComponent extends vue {
+    static super: typeof vue;
   }
   return vueComponent;
 }

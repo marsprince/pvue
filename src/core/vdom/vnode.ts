@@ -3,6 +3,8 @@ import { IVNode, IVNodeData } from "../../@types/vnode";
 export default class VNode implements IVNode {
   public elm;
   public isComment;
+  public componentOptions;
+  isComponent: boolean = false;
 
   constructor(
     public tag?: string,
