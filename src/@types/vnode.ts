@@ -15,8 +15,14 @@ export interface IVNode {
   isOnce?: boolean;
   // 是否是注释
   isComment?: boolean;
+  // 组件参数
+  componentOptions?: any;
+  // 组件实例
+  componentInstance?: any;
+  isComponent: boolean;
 }
 
 export interface IVNodeData {
+  hook?: any;
   on?: { [key: string]: Function | Array<Function> };
 }

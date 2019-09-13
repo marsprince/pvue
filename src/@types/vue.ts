@@ -4,6 +4,7 @@ export interface IVueOptions {
   components?: any;
   directives?: any;
   filters?: any;
+  _base?: any;
 }
 export interface ComponentOptions {
   name?: string;
@@ -13,6 +14,7 @@ export interface ComponentOptions {
   computed?: any;
   watch?: any;
   template?: string;
+  components?: any;
   // render
   render?: any;
   staticRenderFns?: any;

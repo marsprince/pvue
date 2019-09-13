@@ -1,7 +1,12 @@
-import { templateVue as Vue } from "../src/index";
+import { templateVue as Vue, templateVue } from "../src/index";
+const childCom = {
+  template: "<div>child render!</div>"
+};
 const app = new Vue({
-  template:
-    '<div @click="onClick"><div v-if="show">{{arr[0].a}}</div><div v-else>{{a.b.c}}</div></div>',
+  template: '<div @click="onClick"><child-com></child-com></div>',
+  components: {
+    childCom
+  },
   data() {
     return {
       // showContent: "展示",
@@ -71,14 +76,7 @@ app.$watch(
   }
 );
 
-let x = Vue.component("x", {
-  data() {
-    return {
-      a: 1
-    };
-  }
-});
-let y = Vue.component("y", {
+Vue.component("testGlobal", {
   data() {
     return {
       a: 1

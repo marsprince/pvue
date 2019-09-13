@@ -29,11 +29,31 @@ export class Patch {
       hooks[i](oldVnode, vnode);
     }
   }
+  initComponent(vnode: IVNode) {
+    vnode.elm = vnode.componentInstance.$el;
+  }
+  createComponent(vnode: IVNode, parentElm?: Element): boolean {
+    // 源码是用data判断的
+    // 这里为了清晰加了一个变量
+    if (vnode.isComponent) {
+      const data = vnode.data;
+      if (isDef(data.hook) && isDef(data.hook.init)) {
+        data.hook.init(vnode);
+      }
+      if (vnode.componentInstance) {
+        this.initComponent(vnode);
+        this.insert(parentElm, vnode.elm);
+      }
+      return true;
+    }
+  }
 
   createElm(vnode?: IVNode, parentElm?: any) {
-    // TODO：如果是组件节点
+    // 如果是组件节点，直接return
+    if (this.createComponent(vnode, parentElm)) {
+      return;
+    }
     // 校验tag是否合法
-
     const nodeOps = this.nodeOps;
     // const modules = this.modules;
 
