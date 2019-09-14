@@ -26,3 +26,9 @@ export interface IVNodeData {
   hook?: any;
   on?: { [key: string]: Function | Array<Function> };
 }
+
+export interface IComponentOptions {
+  Ctor?: any;
+  // 组件的事件
+  listeners?: any;
+}
