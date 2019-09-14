@@ -18,6 +18,8 @@ export function createComponent(
     Ctor = baseCtor.extend(Ctor, Object.getPrototypeOf(context).constructor);
   }
   const name = Ctor.options.name || tag;
+  // 自定义事件
+  const listeners = data.on;
   installComponentHooks(data);
 
   const vnode = new VNode(
@@ -27,14 +29,18 @@ export function createComponent(
   vnode.componentOptions = {
     Ctor,
     tag,
-    children
+    children,
+    listeners
   };
   vnode.isComponent = true;
   return vnode;
 }
 
 export function createComponentInstanceForVnode(vnode: IVNode) {
-  return new vnode.componentOptions.Ctor({});
+  return new vnode.componentOptions.Ctor({
+    _isComponent: true,
+    _parentVnode: vnode
+  });
 }
 const componentVNodeHooks = {
   init(vnode: IVNode) {

@@ -1,9 +1,14 @@
-import { templateVue as Vue, templateVue } from "../src/index";
+import { templateVue as Vue } from "../src/index";
 const childCom = {
-  template: "<div>child render!</div>"
+  template: '<div @click="onClick">child render!</div>',
+  methods: {
+    onClick() {
+      this.$emit("click", "childClick");
+    }
+  }
 };
 const app = new Vue({
-  template: '<div @click="onClick"><child-com></child-com></div>',
+  template: '<div><child-com @click="onClick"></child-com></div>',
   components: {
     childCom
   },
@@ -34,14 +39,14 @@ const app = new Vue({
   //   }
   // },
   methods: {
-    onClick() {
+    onClick(ms) {
       // this.arr[0].a = Math.random();
       // if (this.arr.length === 0) {
       //   this.$set(this.arr, "0", {});
       // } else {
       //   this.$set(this.arr[0], "a", Math.random());
       // }
-      this.a.b.c = Math.random();
+      console.log(ms);
     }
   },
   // 生命周期

@@ -7,6 +7,8 @@ import { observe } from "../observer/observe";
 import { ComputedWatcher } from "../observer/watcher";
 import { defineComputed } from "../observer/defineReactive";
 import { IWatcherOptions } from "../../@types/observer";
+import { vueComponent } from "../../@types/vue";
+import { updateComponentListeners } from "../instance/event";
 
 export function initMethods(vm: Vue) {
   if (vm.$options.methods) proxyMethods(vm);
@@ -93,5 +95,13 @@ export function initWatch(vm: Vue) {
     } else {
       createWatcher(vm, key, handler);
     }
+  }
+}
+
+// 初始化vue自身的events,和输入无关
+export function initVueEvents(vm: vueComponent) {
+  const listeners = vm.$options._parentListeners;
+  if (listeners) {
+    updateComponentListeners(vm, listeners);
   }
 }

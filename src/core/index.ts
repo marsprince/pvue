@@ -11,7 +11,8 @@ import {
   initMethods,
   initData,
   initComputed,
-  initWatch
+  initWatch,
+  initVueEvents
 } from "./init/initVueInstance";
 import { nextTick } from "./util/nextTick";
 import { callHook } from "./instance/lifeCycle";
@@ -30,6 +31,8 @@ import {
   off,
   once
 } from "./methods/index";
+
+import { initInternalComponent } from "./init/util";
 
 import { ComponentOptions, IVueOptions } from "../@types/vue";
 
@@ -80,13 +83,21 @@ export class Vue {
     this._init(options);
   }
 
-  _init(options: object) {
-    // 复杂的合并规则
-    this.$options = mergeOptions(
-      (this.constructor as any).options,
-      options,
-      this
-    );
+  _init(options: ComponentOptions) {
+    // 如果是组件，因为在extend的时候已经执行了mergeOptions，不用重复合并
+    if (options && options._isComponent) {
+      initInternalComponent(this, options);
+    } else {
+      // 复杂的合并规则
+      this.$options = mergeOptions(
+        (this.constructor as any).options,
+        options,
+        this
+      );
+    }
+
+    initVueEvents(this);
+
     // beforeCreate，这时候是把vue自身的东西挂载完毕
     callHook(this, "beforeCreate");
     this._initOptions();
