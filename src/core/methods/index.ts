@@ -8,3 +8,4 @@ export * from "./on";
 export * from "./emit";
 export * from "./off";
 export * from "./once";
+export * from "./mixin";

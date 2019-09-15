@@ -1,4 +1,9 @@
 import { templateVue as Vue } from "../src/index";
+Vue.mixin({
+  beforeCreate() {
+    console.log("全局混入");
+  }
+});
 const childCom = {
   template: '<div @click="onClick">child render!</div>',
   methods: {
@@ -9,9 +14,9 @@ const childCom = {
 };
 const app = new Vue({
   template: '<div><child-com @click="onClick"></child-com></div>',
-  components: {
-    childCom
-  },
+  // components: {
+  //   childCom
+  // },
   data() {
     return {
       // showContent: "展示",
@@ -69,8 +74,9 @@ const app = new Vue({
     console.log("updated", this);
   }
 });
-
+Vue.component("childCom", childCom);
 app.$mount("#app");
+
 app.$watch(
   "a",
   function(newVal, oldVal) {
@@ -81,13 +87,6 @@ app.$watch(
   }
 );
 
-Vue.component("testGlobal", {
-  data() {
-    return {
-      a: 1
-    };
-  }
-});
 // console.log(x.options, y.options);
 app.$on("test", function(msg) {
   console.log(msg);

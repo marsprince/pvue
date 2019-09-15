@@ -29,7 +29,8 @@ import {
   on,
   emit,
   off,
-  once
+  once,
+  mixin
 } from "./methods/index";
 
 import { initInternalComponent } from "./init/util";
@@ -172,6 +173,7 @@ export class Vue {
   // $set
   // 向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新。
   static set = set;
+  static mixin = mixin;
 
   // instance method
   public $nextTick = nextTick.bind(this);
