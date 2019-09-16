@@ -1,11 +1,14 @@
 import { templateVue as Vue } from "../src/index";
-Vue.mixin({
-  beforeCreate() {
-    console.log("全局混入");
-  }
+Vue.filter("capitalize", function(ms) {
+  return ms + "sssssssss";
 });
 const childCom = {
-  template: '<div @click="onClick">child render!</div>',
+  template: '<div @click="onClick">{{ message | capitalize }}</div>',
+  data() {
+    return {
+      message: "test"
+    };
+  },
   methods: {
     onClick() {
       this.$emit("click", "childClick");
