@@ -1,19 +1,21 @@
 import { Vue } from "../core/index";
 import { IVNode } from "./vnode";
 export type vueComponent = Vue;
-export interface IVueOptions {
-  components?: any;
-  directives?: any;
-  filters?: any;
-  _base?: any;
+export type VueCtor = typeof Vue;
+export interface IOptionProps {
+  type?: any;
 }
 export interface ComponentOptions {
   name?: string;
   el?: Element | string;
+  props?: any;
+  propsData?: any;
   data?: () => object;
   methods?: any;
   computed?: any;
   watch?: any;
+  directives?: any;
+  filters?: any;
   template?: string;
   components?: any;
   // render
@@ -32,6 +34,7 @@ export interface ComponentOptions {
   deactivated?(): void;
 
   //以下均为vue添加的
+  _base?: Vue;
   //extend的缓存
   _Ctor?: any;
   // 父级的事件

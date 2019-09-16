@@ -8,4 +8,5 @@ export function initInternalComponent(
   const vnode = options._parentVnode;
   const vnodeComponentOptions = vnode.componentOptions;
   opts._parentListeners = vnodeComponentOptions.listeners;
+  opts.propsData = vnodeComponentOptions.propsData;
 }

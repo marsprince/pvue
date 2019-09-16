@@ -2,6 +2,7 @@ import { IVNode, IVNodeData } from "../../@types/vnode";
 import { vueComponent } from "../../@types/vue";
 import { isObject } from "../../shared/utils";
 import VNode from "./vnode";
+import { extractPropsFromVNodeData } from "./helpers/extractProp";
 
 export function createComponent(
   // 构造函数，可以是对象，构造函数等
@@ -18,6 +19,8 @@ export function createComponent(
     Ctor = baseCtor.extend(Ctor, Object.getPrototypeOf(context).constructor);
   }
   const name = Ctor.options.name || tag;
+  // extract props and to child
+  const propsData = extractPropsFromVNodeData(data, Ctor, tag);
   // 自定义事件
   const listeners = data.on;
   installComponentHooks(data);
@@ -30,6 +33,7 @@ export function createComponent(
     Ctor,
     tag,
     children,
+    propsData,
     listeners
   };
   vnode.isComponent = true;

@@ -108,3 +108,13 @@ export const capitalize = cached(
     return str.charAt(0).toUpperCase() + str.slice(1);
   }
 );
+
+/**
+ * Hyphenate a camelCase string.
+ */
+const hyphenateRE = /\B([A-Z])/g;
+export const hyphenate = cached(
+  (str: string): string => {
+    return str.replace(hyphenateRE, "-$1").toLowerCase();
+  }
+);
