@@ -12,7 +12,8 @@ import {
   initData,
   initComputed,
   initWatch,
-  initVueEvents
+  initVueEvents,
+  initProps
 } from "./init/initVueInstance";
 import { nextTick } from "./util/nextTick";
 import { callHook } from "./instance/lifeCycle";
@@ -61,6 +62,8 @@ export class Vue {
   // 是否包含类似 hook: updated 的事件，如果不包含的话，在callHook的时候就不会emit对应事件
   _hasHookEvent: false;
   _events: any = {};
+  // props的代理
+  _props = {};
 
   // static props
 
@@ -70,8 +73,7 @@ export class Vue {
   //'filter'
   //]
   // 会和每个组件进行merge
-  static options: IVueOptions = {
-    _base: Vue,
+  static options: ComponentOptions = {
     components: Object.create(null),
     directives: Object.create(null),
     filters: Object.create(null)
@@ -118,6 +120,8 @@ export class Vue {
     // 初始化computed
     initComputed(this);
     initWatch(this);
+    /// 初始化Props
+    initProps(this);
   }
 
   // 将vnode渲染并挂载

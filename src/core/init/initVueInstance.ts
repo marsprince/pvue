@@ -9,6 +9,7 @@ import { defineComputed } from "../observer/defineReactive";
 import { IWatcherOptions } from "../../@types/observer";
 import { vueComponent } from "../../@types/vue";
 import { updateComponentListeners } from "../instance/event";
+import { toggleObserving, defineReactive } from "../observer/defineReactive";
 
 export function initMethods(vm: Vue) {
   if (vm.$options.methods) proxyMethods(vm);
@@ -104,4 +105,26 @@ export function initVueEvents(vm: vueComponent) {
   if (listeners) {
     updateComponentListeners(vm, listeners);
   }
+}
+
+// props如果是基本类型，可以直接改，这时候调用的是依然dr
+export function initProps(vm: vueComponent) {
+  // props: 定义
+  // propsData：数据
+  const { props, propsData } = vm.$options;
+  console.log(propsData);
+  const { _props } = vm;
+  const isRoot = false;
+  if (!isRoot) {
+    toggleObserving(false);
+  }
+  for (const key in props) {
+    // TODO: 验证
+    const value = propsData[key];
+    defineReactive(_props, key, value);
+    if (!(key in vm)) {
+      proxy(vm, `_props`, key);
+    }
+  }
+  toggleObserving(true);
 }

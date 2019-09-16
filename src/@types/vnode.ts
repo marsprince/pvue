@@ -23,8 +23,10 @@ export interface IVNode {
 }
 
 export interface IVNodeData {
+  props?: any;
   hook?: any;
   on?: { [key: string]: Function | Array<Function> };
+  attrs?: any;
 }
 
 export interface IComponentOptions {

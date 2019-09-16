@@ -4,6 +4,9 @@ import { observe } from "./observe";
 import { noop } from "../../shared/utils/index";
 import { watcherStack } from "./watcher";
 
+let shouldObserveVal = true;
+export const toggleObserving = _ => (shouldObserveVal = _);
+
 function dependArray(value: Array<any>) {
   // 对数组的每一项都要做depend
   for (let i = 0; i < value.length; i++) {
@@ -38,7 +41,8 @@ export function defineReactive(obj: object, key: string | number, val?: any) {
   // dep的作用: 调度和通知，类似于处理中心
   const dep = new Dep();
   const sharedPropertyDefinition = getSharedPropertyDefinition();
-  let childOb = observe(val);
+  // 给val添加ob
+  let childOb = shouldObserveVal && observe(val);
 
   // 在get的时候激活依赖收集
   sharedPropertyDefinition.get = function() {
@@ -48,7 +52,7 @@ export function defineReactive(obj: object, key: string | number, val?: any) {
     dep.depend();
 
     if (childOb) {
-      // 为子元素做好依赖
+      // 为子元素做好依赖，通知set的东西更新
       childOb.depForSet.depend();
       if (Array.isArray(value)) {
         // 这里是为了收集多维数组的依赖
@@ -66,7 +70,7 @@ export function defineReactive(obj: object, key: string | number, val?: any) {
       setter.call(obj, newVal);
     }
     val = newVal;
-    childOb = observe(newVal);
+    childOb = shouldObserveVal && observe(newVal);
     dep.notify();
   };
   Object.defineProperty(obj, key, sharedPropertyDefinition);

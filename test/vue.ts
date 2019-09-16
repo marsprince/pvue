@@ -3,7 +3,12 @@ Vue.filter("capitalize", function(ms) {
   return ms + "sssssssss";
 });
 const childCom = {
-  template: '<div @click="onClick">{{ message | capitalize }}</div>',
+  template: '<div @click="onClick">{{ size }}</div>',
+  props: {
+    size: {
+      type: Number
+    }
+  },
   data() {
     return {
       message: "test"
@@ -16,7 +21,7 @@ const childCom = {
   }
 };
 const app = new Vue({
-  template: '<div><child-com @click="onClick"></child-com></div>',
+  template: '<div><child-com @click="onClick" :size="size"></child-com></div>',
   // components: {
   //   childCom
   // },
@@ -25,6 +30,7 @@ const app = new Vue({
       // showContent: "展示",
       // notShowContent: "不展示",
       show: false,
+      size: 1111,
       // testSet: {
       //   m: 111
       // },
@@ -54,7 +60,7 @@ const app = new Vue({
       // } else {
       //   this.$set(this.arr[0], "a", Math.random());
       // }
-      console.log(ms);
+      this.size = Math.random();
     }
   },
   // 生命周期
