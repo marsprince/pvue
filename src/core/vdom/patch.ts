@@ -2,6 +2,7 @@ import { IVNode } from "../../@types/vnode";
 import { isUndef, isDef } from "../../shared/utils";
 import { Hooks } from "../../platforms/backend/modules/hooks.enum";
 import VNode, { createUseLessVNode } from "../../core/vdom/vnode";
+import { invokeComponentHook } from "./createComponent";
 
 function sameVnode(a, b) {
   return (
@@ -36,10 +37,7 @@ export class Patch {
     // 源码是用data判断的
     // 这里为了清晰加了一个变量
     if (vnode.isComponent) {
-      const data = vnode.data;
-      if (isDef(data.hook) && isDef(data.hook.init)) {
-        data.hook.init(vnode);
-      }
+      invokeComponentHook("init", vnode);
       if (vnode.componentInstance) {
         this.initComponent(vnode);
         this.insert(parentElm, vnode.elm);
@@ -87,6 +85,10 @@ export class Patch {
     }
     const nodeOps = this.nodeOps;
     const elm = (vnode.elm = oldVnode.elm);
+    // 激活组件节点的Prepatch钩子
+    if (vnode.isComponent) {
+      invokeComponentHook("prepatch", vnode, oldVnode);
+    }
     // 两个相同节点，涉及文本和child比较
     if (isUndef(vnode.text)) {
       const oldCh = oldVnode.children;
@@ -139,7 +141,7 @@ export class Patch {
     } else {
       // 检查是否是真实dom节点
       const isRealElement = !(oldVnode instanceof VNode);
-      // 两个都存在，并且是相同节点
+      // 两个都存在，并且不是真实节点，直接patch
       if (!isRealElement && sameVnode(oldVnode, vnode)) {
         // 进入节点的patch流程
         this.patchVnode(oldVnode as IVNode, vnode);

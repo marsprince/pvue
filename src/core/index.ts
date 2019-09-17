@@ -46,8 +46,11 @@ export class Vue {
   $options: any = {};
   // dom节点
   $el: any;
-  // 当前组件对应的vnode
+  // vue是由组件构成的，因此每一个vue组件，存在两个节点，组件节点和真实节点
+  // 真实节点：有组件创建
   _vnode: IVNode;
+  // 组件节点：由组件的父组件创建，通过$options带进来
+  $vnode: IVNode;
   // data函数返回的data
   _data: object = {};
   $data: object = {};

@@ -3,7 +3,7 @@ Vue.filter("capitalize", function(ms) {
   return ms + "sssssssss";
 });
 const childCom = {
-  template: '<div @click="onClick">{{ size }}</div>',
+  template: '<div @click="onClick">{{ size.z }}</div>',
   props: {
     size: {
       type: Number
@@ -18,10 +18,14 @@ const childCom = {
     onClick() {
       this.$emit("click", "childClick");
     }
+  },
+  updated() {
+    console.log("child up");
   }
 };
 const app = new Vue({
-  template: '<div><child-com @click="onClick" :size="size"></child-com></div>',
+  template:
+    '<div>{{size.z}}<child-com @click="onClick" :size="size"></child-com></div>',
   // components: {
   //   childCom
   // },
@@ -30,7 +34,9 @@ const app = new Vue({
       // showContent: "展示",
       // notShowContent: "不展示",
       show: false,
-      size: 1111,
+      size: {
+        z: 1
+      },
       // testSet: {
       //   m: 111
       // },
@@ -60,27 +66,11 @@ const app = new Vue({
       // } else {
       //   this.$set(this.arr[0], "a", Math.random());
       // }
-      this.size = Math.random();
+      this.size.z = Math.random();
     }
   },
-  // 生命周期
-  beforeCreate() {
-    console.log("beforeCreate", JSON.parse(JSON.stringify(this)));
-  },
-  created() {
-    console.log("created", JSON.parse(JSON.stringify(this)));
-  },
-  beforeMount() {
-    console.log("beforeMount", JSON.parse(JSON.stringify(this)));
-  },
-  mounted() {
-    console.log("mounted", this);
-  },
-  beforeUpdate() {
-    console.log("beforeUpdate", this);
-  },
   updated() {
-    console.log("updated", this);
+    console.log("parent up");
   }
 });
 Vue.component("childCom", childCom);

@@ -2,6 +2,7 @@ import { IVNodeData } from "../../../@types/vnode";
 import { VueCtor } from "../../../@types/vue";
 import { isUndef, isDef, hasOwn, hyphenate } from "../../../shared/utils";
 
+// 浅拷贝
 function checkProp(
   // 检查后需要把Props绑定在res上
   res: Object,
