@@ -112,7 +112,6 @@ export function initProps(vm: vueComponent) {
   // props: 定义
   // propsData：数据
   const { props, propsData } = vm.$options;
-  console.log(propsData);
   const { _props } = vm;
   const isRoot = false;
   if (!isRoot) {

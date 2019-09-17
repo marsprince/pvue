@@ -3,7 +3,9 @@ import { vueComponent } from "../../@types/vue";
 import { isObject } from "../../shared/utils";
 import VNode from "./vnode";
 import { extractPropsFromVNodeData } from "./helpers/extractProp";
+import { updateChildComponent } from "../instance/lifeCycle";
 
+// 所有的组件节点都是从这里创建的
 export function createComponent(
   // 构造函数，可以是对象，构造函数等
   Ctor: any,
@@ -19,7 +21,7 @@ export function createComponent(
     Ctor = baseCtor.extend(Ctor, Object.getPrototypeOf(context).constructor);
   }
   const name = Ctor.options.name || tag;
-  // extract props and to child
+  // 从data中解压出propsData，扔到componentOptions上
   const propsData = extractPropsFromVNodeData(data, Ctor, tag);
   // 自定义事件
   const listeners = data.on;
@@ -36,6 +38,7 @@ export function createComponent(
     propsData,
     listeners
   };
+  // 组件节点
   vnode.isComponent = true;
   return vnode;
 }
@@ -52,6 +55,12 @@ const componentVNodeHooks = {
       vnode
     ));
     child.$mount(undefined);
+  },
+  prepatch(vnode: IVNode, oldVnode: IVNode) {
+    // 走到Patch说明是同一个节点，新节点没有走到新建组件的逻辑，直接复用老的即可
+    // const options = vnode.componentOptions;
+    vnode.componentInstance = oldVnode.componentInstance;
+    updateChildComponent(vnode);
   }
 };
 const hooksToMerge = Object.keys(componentVNodeHooks);
@@ -61,5 +70,11 @@ function installComponentHooks(data: IVNodeData) {
   for (let i = 0; i < hooksToMerge.length; i++) {
     const key = hooksToMerge[i];
     hooks[key] = componentVNodeHooks[key];
+  }
+}
+
+export function invokeComponentHook(hook: string, vnode: IVNode, ...args) {
+  if (vnode.data && vnode.data.hook && vnode.data.hook[hook]) {
+    vnode.data.hook[hook](vnode, ...args);
   }
 }

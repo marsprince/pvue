@@ -3,6 +3,8 @@ import { invokeWithErrorHandling } from "../util/error";
 import { lifeCycle } from "../../shared/constant";
 import { Watcher } from "../../core/observer/watcher";
 import { createEmptyVNode } from "../vdom/vnode";
+import { IVNode } from "../../@types/vnode";
+import { toggleObserving } from "../observer/defineReactive";
 
 export function callHook(vm: vueComponent, hook: string) {
   if (hook in lifeCycle) {
@@ -35,4 +37,25 @@ export function mountComponent(
 
   callHook(this, "mounted");
   return this;
+}
+
+export function updateChildComponent(vnode: IVNode) {
+  const vm = vnode.componentInstance;
+  const { propsData } = vnode.componentOptions;
+  const { props } = vm.$options;
+
+  if (propsData && props) {
+    toggleObserving(false);
+    const props = vm._props;
+    // vue使用了_propKeys来存储props的key值
+    // const propKeys = vm.$options._propKeys || [];
+    for (let key in props) {
+      // const key = propKeys[i];
+      // TODO: validate
+      props[key] = propsData[key];
+    }
+    toggleObserving(true);
+    // keep a copy of raw propsData
+    vm.$options.propsData = propsData;
+  }
 }

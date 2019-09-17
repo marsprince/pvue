@@ -19,7 +19,7 @@ class Scheduler {
 
   // watcher的添加顺序，computed => watcher => render
   flushSchedulerQueue() {
-    const updatedQueue = new Set([...this.queue]);
+    const updatedQueue = [...this.queue];
     for (let watcher of this.queue) {
       if (watcher.isRenderWatcher) {
         callHook(watcher.vm, "beforeUpdate");
@@ -35,8 +35,11 @@ class Scheduler {
     this.queue.clear();
   }
 
-  callUpdatedHooks(updatedQueue: Set<any>) {
-    for (let watcher of updatedQueue) {
+  callUpdatedHooks(updatedQueue: Array<Watcher>) {
+    // 从子组件向父组件call
+    let i = updatedQueue.length;
+    while (i--) {
+      const watcher = updatedQueue[i];
       const vm = watcher.vm;
       // 确保只有renderWatcher的触发会引起updated
       if (watcher.isRenderWatcher) {
