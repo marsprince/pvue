@@ -44,6 +44,14 @@ export function updateChildComponent(vnode: IVNode) {
   const { propsData } = vnode.componentOptions;
   const { props } = vm.$options;
 
+  vm.$options._parentVnode = vnode;
+  vm.$vnode = vnode; // update vm's placeholder node without re-render
+
+  if (vm._vnode) {
+    // update child tree's parent
+    vm._vnode.parent = vnode;
+  }
+
   if (propsData && props) {
     toggleObserving(false);
     const props = vm._props;
