@@ -6,6 +6,7 @@ export function initInternalComponent(
 ) {
   const opts = (vm.$options = Object.create((vm.constructor as any).options));
   const vnode = options._parentVnode;
+  opts._parentVnode = vnode;
   const vnodeComponentOptions = vnode.componentOptions;
   opts._parentListeners = vnodeComponentOptions.listeners;
   opts.propsData = vnodeComponentOptions.propsData;

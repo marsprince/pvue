@@ -141,7 +141,11 @@ export class Vue {
 
   // 调用render方法，把实例渲染成一个虚拟 Node，
   _render() {
-    return this.$options.render.call(this, this.$createElement);
+    //_parentVnode 父组件创建的组件节点
+    const { render, _parentVnode } = this.$options;
+    const vnode = render.call(this, this.$createElement);
+    this.$vnode = vnode.parent = _parentVnode;
+    return vnode;
   }
 
   // 返回一个vnode

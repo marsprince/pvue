@@ -21,6 +21,9 @@ const childCom = {
   },
   updated() {
     console.log("child up");
+  },
+  mounted() {
+    console.log(this);
   }
 };
 const app = new Vue({
