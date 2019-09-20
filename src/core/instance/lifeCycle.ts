@@ -6,6 +6,18 @@ import { createEmptyVNode } from "../vdom/vnode";
 import { IVNode } from "../../@types/vnode";
 import { toggleObserving } from "../observer/defineReactive";
 
+// 当前正在初始化的父vue实例
+let activeInstance = null;
+
+export const setActiveInstance = vm => {
+  const preActiveInstance = activeInstance;
+  activeInstance = vm;
+  return () => {
+    activeInstance = preActiveInstance;
+  };
+};
+export const getActiveInstance = () => activeInstance;
+
 export function callHook(vm: vueComponent, hook: string) {
   if (hook in lifeCycle) {
     const handlers = vm.$options[hook];

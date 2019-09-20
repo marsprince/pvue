@@ -43,4 +43,6 @@ export interface ComponentOptions {
   _isComponent?: boolean;
   // 当前节点
   _parentVnode?: IVNode;
+  // 父vue实例
+  parent?: vueComponent;
 }
