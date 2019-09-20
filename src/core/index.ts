@@ -13,7 +13,8 @@ import {
   initComputed,
   initWatch,
   initVueEvents,
-  initProps
+  initProps,
+  initLifecycle
 } from "./init/initVueInstance";
 import { nextTick } from "./util/nextTick";
 import { callHook } from "./instance/lifeCycle";
@@ -36,8 +37,9 @@ import {
 } from "./methods/index";
 
 import { initInternalComponent } from "./init/util";
+import { setActiveInstance } from "./instance/lifeCycle";
 
-import { ComponentOptions, IVueOptions } from "../@types/vue";
+import { ComponentOptions } from "../@types/vue";
 
 export class Vue {
   // instance props
@@ -67,6 +69,9 @@ export class Vue {
   _events: any = {};
   // props的代理
   _props = {};
+  // 父子关系
+  $parent: Vue = null;
+  $children: Array<Vue> = [];
 
   // static props
 
@@ -102,7 +107,7 @@ export class Vue {
         this
       );
     }
-
+    initLifecycle(this);
     initVueEvents(this);
 
     // beforeCreate，这时候是把vue自身的东西挂载完毕
@@ -129,6 +134,7 @@ export class Vue {
 
   // 将vnode渲染并挂载
   _update(vnode: IVNode) {
+    const restoreActiveInstance = setActiveInstance(this);
     if (this._vnode) {
       // 如果有
       this.$el = this.__patch__(this._vnode, vnode);
@@ -136,6 +142,7 @@ export class Vue {
       // 如果没有
       this.$el = this.__patch__(this.$el, vnode);
     }
+    restoreActiveInstance();
     this._vnode = vnode;
   }
 

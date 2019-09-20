@@ -127,3 +127,20 @@ export function initProps(vm: vueComponent) {
   }
   toggleObserving(true);
 }
+
+export function initLifecycle(vm: vueComponent) {
+  // 初始化父子组件关系，主要是当前组件的$parent和父组件的$children
+  const options = vm.$options;
+
+  // locate first non-abstract parent
+  let parent = options.parent;
+  // 如果当前组件不是抽象组件，则将当前组件推入父组件的children中
+  if (parent && !options.abstract) {
+    // 如果父组件是一个抽象组件，则递归查找
+    while (parent.$options.abstract && parent.$parent) {
+      parent = parent.$parent;
+    }
+    parent.$children.push(vm);
+  }
+  vm.$parent = parent;
+}

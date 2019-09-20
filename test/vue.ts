@@ -72,8 +72,8 @@ const app = new Vue({
       this.size.z = Math.random();
     }
   },
-  updated() {
-    console.log("parent up");
+  mounted() {
+    console.log(this);
   }
 });
 Vue.component("childCom", childCom);
