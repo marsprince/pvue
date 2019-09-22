@@ -41,6 +41,7 @@ export function createComponent(
   };
   // 组件节点
   vnode.isComponent = true;
+  vnode.context = context;
   return vnode;
 }
 
