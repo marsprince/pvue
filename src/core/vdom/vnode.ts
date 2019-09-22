@@ -1,9 +1,11 @@
 import { IVNode, IVNodeData } from "../../@types/vnode";
+import { vueComponent } from "../../@types/vue";
 
 export default class VNode implements IVNode {
   public elm;
   public isComment;
   public componentOptions;
+  public context: vueComponent;
   isComponent: boolean = false;
 
   constructor(
