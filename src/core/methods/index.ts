@@ -12,3 +12,4 @@ export * from "./mixin";
 export * from "./filter";
 export * from "./del";
 export * from "./use";
+export * from "./observable";

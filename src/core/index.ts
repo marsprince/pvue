@@ -35,7 +35,8 @@ import {
   mixin,
   filter,
   del,
-  use
+  use,
+  observable
 } from "./methods/index";
 
 import { initInternalComponent } from "./init/util";
@@ -200,6 +201,7 @@ export class Vue {
   static mixin = mixin;
   static filter = filter;
   static use = use;
+  static observable = observable;
 
   // instance method
   public $nextTick = nextTick.bind(this);
