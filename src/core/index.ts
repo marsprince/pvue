@@ -33,7 +33,8 @@ import {
   off,
   once,
   mixin,
-  filter
+  filter,
+  del
 } from "./methods/index";
 
 import { initInternalComponent } from "./init/util";
@@ -192,6 +193,7 @@ export class Vue {
   // $set
   // 向响应式对象中添加一个属性，并确保这个新属性同样是响应式的，且触发视图更新。
   static set = set;
+  static delete = del;
   static mixin = mixin;
   static filter = filter;
 
@@ -201,6 +203,7 @@ export class Vue {
   public $destroy = destroy.bind(this);
   public $forceUpdate = forceUpdate.bind(this);
   public $set = set;
+  public $delete = del;
   public $on = on.bind(this);
   public $emit = emit.bind(this);
   public $off = off.bind(this);
