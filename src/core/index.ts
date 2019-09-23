@@ -34,7 +34,8 @@ import {
   once,
   mixin,
   filter,
-  del
+  del,
+  use
 } from "./methods/index";
 
 import { initInternalComponent } from "./init/util";
@@ -91,6 +92,8 @@ export class Vue {
   static config: any = {};
   // cid
   static cid = 0;
+  // 安装的插件
+  static _installedPlugins = [];
 
   constructor(options: ComponentOptions) {
     this._init(options);
@@ -196,6 +199,7 @@ export class Vue {
   static delete = del;
   static mixin = mixin;
   static filter = filter;
+  static use = use;
 
   // instance method
   public $nextTick = nextTick.bind(this);

@@ -1,7 +1,4 @@
 import { templateVue as Vue } from "../src/index";
-Vue.filter("capitalize", function(ms) {
-  return ms + "sssssssss";
-});
 const childCom = {
   template: '<div @click="onClick">{{ size.z }}</div>',
   props: {

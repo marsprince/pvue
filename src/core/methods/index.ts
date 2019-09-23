@@ -11,3 +11,4 @@ export * from "./once";
 export * from "./mixin";
 export * from "./filter";
 export * from "./del";
+export * from "./use";
