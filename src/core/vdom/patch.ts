@@ -1,8 +1,10 @@
 import { IVNode } from "../../@types/vnode";
 import { isUndef, isDef } from "../../shared/utils";
-import { Hooks } from "../../platforms/backend/modules/hooks.enum";
+import { Hooks } from "./modules/hooks.enum";
 import VNode, { createUseLessVNode } from "../../core/vdom/vnode";
 import { invokeComponentHook } from "./createComponent";
+
+export const emptyNode = createUseLessVNode();
 
 function sameVnode(a, b) {
   return (
@@ -13,9 +15,16 @@ function sameVnode(a, b) {
   );
 }
 
+interface IPatchProgress {
+  isInitialPatch: boolean;
+  insertedVnodeQueue: Array<any>;
+}
+
 export class Patch {
   nodeOps: any;
   modules: any;
+  // 保存每一个patch流程的环境变量
+  patchStack: Array<IPatchProgress> = [];
   constructor(public backend: any) {
     // 操作（生成新节点，替换节点等）
     this.nodeOps = backend.nodeOps;
@@ -23,13 +32,45 @@ export class Patch {
     this.modules = backend.modules;
   }
 
-  invokeHooks(name: string, oldVnode: IVNode, vnode: IVNode) {
-    // 挂在modules里的hooks
-    const hooks = this.modules.hooks[name];
-    for (let i = 0; i < hooks.length; i++) {
-      hooks[i](oldVnode, vnode);
+  invokeCreateHooks(vnode: IVNode) {
+    // 先激活公共钩子，再激活组件对应的钩子
+    const cbs = this.modules.hook;
+    const { insertedVnodeQueue } = this.patchStack[this.patchStack.length - 1];
+    for (let i = 0; i < cbs.create.length; ++i) {
+      cbs.create[i](emptyNode, vnode);
+    }
+    let i = vnode.data.hook; // Reuse variable
+    if (isDef(i)) {
+      if (isDef(i.create)) i.create(emptyNode, vnode);
+      if (isDef(i.insert)) insertedVnodeQueue.push(vnode);
     }
   }
+
+  invokeInsertHook(vnode: IVNode) {
+    const ctx = this.patchStack[this.patchStack.length - 1];
+    if (ctx.isInitialPatch && isDef(vnode.parent)) {
+      // vnode.parent.data.pendingInsert = queue;
+    } else {
+      const queue = ctx.insertedVnodeQueue;
+      for (let i = 0; i < queue.length; ++i) {
+        queue[i].data.hook.insert(queue[i]);
+      }
+    }
+  }
+
+  invokeUpdateHook(oldVnode: IVNode, vnode: IVNode) {
+    const { data } = vnode;
+    const cbs = this.modules.hook;
+    if (isDef(data)) {
+      for (let i = 0; i < cbs.update.length; ++i) {
+        cbs.update[i](oldVnode, vnode);
+      }
+      if (data.hook && data.hook.update) {
+        data.hook.update(oldVnode, vnode);
+      }
+    }
+  }
+
   initComponent(vnode: IVNode) {
     vnode.elm = vnode.componentInstance.$el;
   }
@@ -59,13 +100,13 @@ export class Patch {
     const children = vnode.children;
 
     if (isDef(tag)) {
-      // 调用
+      // 创建节点
       vnode.elm = nodeOps.createElement(tag, vnode);
-      // 遍历子虚拟节点，递归调用 createElm
+      // 创建子节点
       this.createChildren(vnode, children);
       // 激活对应的hook
       if (isDef(vnode.data)) {
-        this.invokeHooks(Hooks.Create, createUseLessVNode(), vnode);
+        this.invokeCreateHooks(vnode);
       }
       this.insert(parentElm, vnode.elm);
     } else if (vnode.isComment) {
@@ -89,6 +130,7 @@ export class Patch {
     if (vnode.isComponent) {
       invokeComponentHook("prepatch", vnode, oldVnode);
     }
+    this.invokeUpdateHook(oldVnode, vnode);
     // 两个相同节点，涉及文本和child比较
     if (isUndef(vnode.text)) {
       const oldCh = oldVnode.children;
@@ -134,11 +176,23 @@ export class Patch {
   }
 
   patch(oldVnode: IVNode | Element, vnode: IVNode) {
-    // 如果新节点存在且老节点不存在
+    // 这里是摧毁逻辑
+    if (isUndef(vnode)) {
+      return;
+    }
+    // 如果新节点存在且老节点不存在，这里是新建逻辑
     if (isUndef(oldVnode)) {
+      this.patchStack.push({
+        isInitialPatch: true,
+        insertedVnodeQueue: []
+      });
       // 如果老节点不存在
       this.createElm(vnode);
     } else {
+      this.patchStack.push({
+        isInitialPatch: false,
+        insertedVnodeQueue: []
+      });
       // 检查是否是真实dom节点
       const isRealElement = !(oldVnode instanceof VNode);
       // 两个都存在，并且不是真实节点，直接patch
@@ -156,6 +210,9 @@ export class Patch {
         this.createElm(vnode, parentElm);
       }
     }
+    // patch运行完毕，将最后一个出栈
+    this.invokeInsertHook(vnode);
+    this.patchStack.pop();
     return vnode.elm;
   }
 }
