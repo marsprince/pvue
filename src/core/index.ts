@@ -86,7 +86,7 @@ export class Vue {
   // 会和每个组件进行merge
   static options: ComponentOptions = {
     components: Object.create(null),
-    directives: Object.create(null),
+    directives: {},
     filters: Object.create(null)
   };
   // 静态config对象

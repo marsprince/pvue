@@ -25,7 +25,7 @@ const childCom = {
 };
 const app = new Vue({
   template:
-    '<div>{{size.z}}<child-com @click="onClick" :size="size"></child-com></div>',
+    '<div><div v-show="show">{{size.z}}</div><div @click="show = !show">cccc</div></div>',
   // components: {
   //   childCom
   // },

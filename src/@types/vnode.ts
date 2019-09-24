@@ -20,6 +20,7 @@ export interface IVNode {
   // 组件实例
   componentInstance?: any;
   isComponent: boolean;
+  parent?: IVNode;
 }
 
 export interface IVNodeData {
@@ -27,10 +28,19 @@ export interface IVNodeData {
   hook?: any;
   on?: { [key: string]: Function | Array<Function> };
   attrs?: any;
+  directives?: any;
 }
 
 export interface IComponentOptions {
   Ctor?: any;
   // 组件的事件
   listeners?: any;
+}
+
+export interface IVNodeDirective {
+  // 在组件里声明的名称。也是$options里的
+  name?: string;
+  rawName?: string;
+  value?: any;
+  oldValue?: any;
 }

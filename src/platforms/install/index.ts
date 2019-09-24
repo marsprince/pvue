@@ -3,10 +3,13 @@ import { mount, runTimeMount } from "../runtime/index";
 import { Patch } from "../../core/vdom/patch";
 import backend from "../backend";
 import { Vue } from "../../core/index";
+import platformDirectives from "../runtime/directives";
+import { extend } from "../../shared/utils";
 
 export function installPlatformConfig(target: any) {
   target.config.isReservedTag = isReservedTag;
   target.config.parsePlatformTagName = parsePlatformTagName;
+  extend(target.options.directives, platformDirectives);
 }
 
 // 接受vue.prorotype，返回Vue

@@ -4,7 +4,7 @@ const handleError = (e, vm, info) => {};
 export function invokeWithErrorHandling(
   handler: Function,
   context: any,
-  args: null | any[],
+  args: null | any[] | IArguments,
   vm: any,
   info: string
 ) {
