@@ -1,4 +1,5 @@
 import { vueComponent } from "./vue";
+import { IHooks } from "./hooks";
 
 export interface IVNode {
   tag?: string;
@@ -25,10 +26,13 @@ export interface IVNode {
 
 export interface IVNodeData {
   props?: any;
-  hook?: any;
+  hook?: IHooks;
   on?: { [key: string]: Function | Array<Function> };
   attrs?: any;
   directives?: any;
+  ref?: string;
+  // ref在for循环中
+  refInFor?: boolean;
 }
 
 export interface IComponentOptions {

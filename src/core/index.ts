@@ -75,6 +75,7 @@ export class Vue {
   // 父子关系
   $parent: Vue = null;
   $children: Array<Vue> = [];
+  $refs: object = {};
 
   // static props
 

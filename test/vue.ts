@@ -25,7 +25,7 @@ const childCom = {
 };
 const app = new Vue({
   template:
-    '<div><div v-once>{{1}}</div><div @click="show = !show">cccc</div></div>',
+    '<div><div ref="p">1</div><div @click="show = !show">cccc</div></div>',
   // components: {
   //   childCom
   // },

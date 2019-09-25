@@ -5,6 +5,7 @@ import VNode from "./vnode";
 import { extractPropsFromVNodeData } from "./helpers/extractProp";
 import { updateChildComponent } from "../instance/lifeCycle";
 import { getActiveInstance } from "../instance/lifeCycle";
+import { IComponentHooks } from "../../@types/hooks";
 
 // 所有的组件节点都是从这里创建的
 export function createComponent(
@@ -52,7 +53,7 @@ export function createComponentInstanceForVnode(vnode: IVNode) {
     parent: getActiveInstance()
   });
 }
-const componentVNodeHooks = {
+const componentVNodeHooks: IComponentHooks = {
   init(vnode: IVNode) {
     const child = (vnode.componentInstance = createComponentInstanceForVnode(
       vnode

@@ -1,8 +1,8 @@
 import { IVNode } from "../../@types/vnode";
 import { isUndef, isDef } from "../../shared/utils";
-import { Hooks } from "./modules/hooks.enum";
 import VNode, { createUseLessVNode } from "../../core/vdom/vnode";
 import { invokeComponentHook } from "./createComponent";
+import { IModuleHooks } from "../../@types/hooks";
 
 export const emptyNode = createUseLessVNode();
 
@@ -23,6 +23,7 @@ interface IPatchProgress {
 export class Patch {
   nodeOps: any;
   modules: any;
+  cbs: IModuleHooks;
   // 保存每一个patch流程的环境变量
   patchStack: Array<IPatchProgress> = [];
   constructor(public backend: any) {
@@ -30,11 +31,11 @@ export class Patch {
     this.nodeOps = backend.nodeOps;
     // 模块（包含特定hook等）
     this.modules = backend.modules;
+    this.cbs = this.modules.hook;
   }
-
   invokeCreateHooks(vnode: IVNode) {
     // 先激活公共钩子，再激活组件对应的钩子
-    const cbs = this.modules.hook;
+    const cbs = this.cbs;
     const { insertedVnodeQueue } = this.patchStack[this.patchStack.length - 1];
     for (let i = 0; i < cbs.create.length; ++i) {
       cbs.create[i](emptyNode, vnode);
@@ -70,7 +71,7 @@ export class Patch {
 
   invokeUpdateHook(oldVnode: IVNode, vnode: IVNode) {
     const { data } = vnode;
-    const cbs = this.modules.hook;
+    const cbs = this.cbs;
     if (isDef(data)) {
       for (let i = 0; i < cbs.update.length; ++i) {
         cbs.update[i](oldVnode, vnode);
