@@ -5,3 +5,7 @@ export enum Hooks {
   Remove = "remove",
   Destroy = "destroy"
 }
+
+export enum componentHooks {
+  Init = "init"
+}
