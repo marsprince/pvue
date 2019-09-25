@@ -22,6 +22,19 @@ export function isPlainObject(obj: any): boolean {
   return _toString.call(obj) === "[object Object]";
 }
 
+/**
+ * Check if value is primitive.
+ */
+export function isPrimitive(value: any): boolean {
+  return (
+    typeof value === "string" ||
+    typeof value === "number" ||
+    // $flow-disable-line
+    typeof value === "symbol" ||
+    typeof value === "boolean"
+  );
+}
+
 // 用于字符串格式化
 export function toString(val: any): string {
   return val === null

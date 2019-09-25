@@ -165,13 +165,16 @@ export class Vue {
   $createElement(
     tag?: string,
     data?: IVNodeData,
-    children?: Array<IVNodeData>
+    children?: Array<IVNodeData>,
+    normalizationType?: any
   ): IVNode {
+    // 如果data是一个数组，这时候相当于没有data，其他东西要前移以为
     if (Array.isArray(data)) {
+      normalizationType = children;
       children = data;
       data = undefined;
     }
-    return createElement.call(this, tag, data, children);
+    return createElement.call(this, tag, data, children，normalizationType);
   }
 
   $mount: Function;

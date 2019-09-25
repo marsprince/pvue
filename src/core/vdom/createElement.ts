@@ -3,12 +3,24 @@ import { Vue } from "../index";
 import VNode from "./vnode";
 import { resolveAsset } from "../util/options";
 import { createComponent } from "./createComponent";
+import { normalizeChildren } from "./helpers/normalizeChildren";
+
+const SIMPLE_NORMALIZE = 1;
+const ALWAYS_NORMALIZE = 2;
 
 // 外界调用的,初始化逻辑移出
-export function createElement(tag?: any, data?: IVNodeData, children?: any) {
+export function createElement(
+  tag?: any,
+  data?: IVNodeData,
+  children?: any,
+  normalizationType?: number
+) {
   if (!tag) {
     // 如果没有tag，则返回一个空文本节点
     return this._v();
+  }
+  if (normalizationType === ALWAYS_NORMALIZE) {
+    children = normalizeChildren(children);
   }
   let vnode;
   // tag有多种可能
