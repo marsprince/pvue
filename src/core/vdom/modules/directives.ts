@@ -87,6 +87,14 @@ function _update(oldVnode: IVNode, vnode: IVNode) {
     }
   }
 
+  if (dirsWithPostpatch.length) {
+    mergeVNodeHook(vnode, "postpatch", () => {
+      for (let i = 0; i < dirsWithPostpatch.length; i++) {
+        callHook(dirsWithPostpatch[i], "componentUpdated", vnode, oldVnode);
+      }
+    });
+  }
+
   if (!isCreate) {
     for (key in oldDirs) {
       if (!newDirs[key]) {

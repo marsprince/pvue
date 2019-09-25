@@ -58,6 +58,16 @@ export class Patch {
     }
   }
 
+  invokePostpatchHook(oldVnode: IVNode, vnode: IVNode) {
+    if (
+      isDef(vnode.data) &&
+      isDef(vnode.data.hook) &&
+      isDef(vnode.data.hook.postpatch)
+    ) {
+      vnode.data.hook.postpatch(oldVnode, vnode);
+    }
+  }
+
   invokeUpdateHook(oldVnode: IVNode, vnode: IVNode) {
     const { data } = vnode;
     const cbs = this.modules.hook;
@@ -74,7 +84,7 @@ export class Patch {
   initComponent(vnode: IVNode) {
     vnode.elm = vnode.componentInstance.$el;
   }
-  createComponent(vnode: IVNode, parentElm?: Element): boolean {
+  createComponent(vnode: IVNode, parentElm?: Element) {
     // 源码是用data判断的
     // 这里为了清晰加了一个变量
     if (vnode.isComponent) {
@@ -83,13 +93,13 @@ export class Patch {
         this.initComponent(vnode);
         this.insert(parentElm, vnode.elm);
       }
-      return true;
     }
   }
 
   createElm(vnode?: IVNode, parentElm?: any) {
     // 如果是组件节点，直接return
-    if (this.createComponent(vnode, parentElm)) {
+    if (vnode.isComponent) {
+      this.createComponent(vnode, parentElm);
       return;
     }
     // 校验tag是否合法
@@ -141,6 +151,8 @@ export class Patch {
       // 简单的设置新节点的文本
       nodeOps.setTextContent(elm, vnode.text);
     }
+
+    this.invokePostpatchHook(oldVnode, vnode);
   }
 
   // 比较子节点

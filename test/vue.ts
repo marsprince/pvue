@@ -25,7 +25,7 @@ const childCom = {
 };
 const app = new Vue({
   template:
-    '<div><div v-show="show">{{size.z}}</div><div @click="show = !show">cccc</div></div>',
+    '<div><div v-once>{{1}}</div><div @click="show = !show">cccc</div></div>',
   // components: {
   //   childCom
   // },
@@ -33,6 +33,7 @@ const app = new Vue({
     return {
       // showContent: "展示",
       // notShowContent: "不展示",
+      items: [1, 2, 3],
       show: false,
       size: {
         z: 1
