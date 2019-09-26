@@ -10,7 +10,7 @@ import { IWatcherOptions } from "../../@types/observer";
 import { vueComponent } from "../../@types/vue";
 import { updateComponentListeners } from "../instance/event";
 import { toggleObserving, defineReactive } from "../observer/defineReactive";
-
+import { resolveSlots } from "../instance/renderHelper";
 export function initMethods(vm: Vue) {
   if (vm.$options.methods) proxyMethods(vm);
 }
@@ -143,4 +143,14 @@ export function initLifecycle(vm: vueComponent) {
     parent.$children.push(vm);
   }
   vm.$parent = parent;
+}
+
+export function initRender(vm: vueComponent) {
+  const options = vm.$options;
+  const parentVnode = (vm.$vnode = options._parentVnode); // the placeholder node in parent tree
+  const renderContext = parentVnode && parentVnode.context;
+  vm.$slots = resolveSlots(options._renderChildren, renderContext);
+  if (parentVnode) {
+    vm.$scopedSlots = parentVnode.data.scopedSlots || {};
+  }
 }

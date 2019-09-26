@@ -5,6 +5,7 @@ import { Watcher } from "../../core/observer/watcher";
 import { createEmptyVNode } from "../vdom/vnode";
 import { IVNode } from "../../@types/vnode";
 import { toggleObserving } from "../observer/defineReactive";
+import { resolveSlots } from "./renderHelper";
 
 // 当前正在初始化的父vue实例
 let activeInstance = null;
@@ -55,9 +56,11 @@ export function updateChildComponent(vnode: IVNode) {
   const vm = vnode.componentInstance;
   const { propsData } = vnode.componentOptions;
   const { props } = vm.$options;
-
+  const renderChildren = vnode.componentOptions.children;
+  const hasChildren = !!(renderChildren || vm.$options._renderChildren); // has new static slots // has old static slots
   vm.$options._parentVnode = vnode;
   vm.$vnode = vnode; // update vm's placeholder node without re-render
+  vm.$options._renderChildren = renderChildren;
 
   if (vm._vnode) {
     // update child tree's parent
@@ -77,5 +80,9 @@ export function updateChildComponent(vnode: IVNode) {
     toggleObserving(true);
     // keep a copy of raw propsData
     vm.$options.propsData = propsData;
+  }
+  if (hasChildren) {
+    vm.$slots = resolveSlots(renderChildren, vnode.context);
+    vm.$forceUpdate();
   }
 }
