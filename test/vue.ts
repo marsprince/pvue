@@ -1,6 +1,7 @@
 import { templateVue as Vue } from "../src/index";
 const childCom = {
-  template: '<div @click="onClick">{{ size.z }}</div>',
+  template:
+    '<div @click="onClick"><slot name="header" :user="user"></slot></div>',
   props: {
     size: {
       type: Number
@@ -8,6 +9,9 @@ const childCom = {
   },
   data() {
     return {
+      user: {
+        firstName: "liu"
+      },
       message: "test"
     };
   },
@@ -17,22 +21,28 @@ const childCom = {
     }
   },
   updated() {
-    console.log("child up");
+    console.log("child");
   },
   mounted() {
     console.log(this);
   }
 };
+const com = {
+  template: "<div>123</div>"
+};
 const app = new Vue({
   template:
-    '<div><div v-for="item,index in items" ref="p">{{item}}</div><div @click="show = !show">cccc</div></div>',
+    "<div @click='onClick'>{{size.z}}<child-com><template v-slot:header>123</template></chld-com></div>",
   // components: {
-  //   childCom
+  //   com
   // },
   data() {
     return {
       // showContent: "展示",
       // notShowContent: "不展示",
+      user: {
+        firstName: "liu"
+      },
       items: [1, 2, 3],
       show: false,
       size: {
@@ -75,6 +85,8 @@ const app = new Vue({
   }
 });
 Vue.component("childCom", childCom);
+Vue.component("com", com);
+app.$mount("#app");
 app.$mount("#app");
 
 app.$watch(

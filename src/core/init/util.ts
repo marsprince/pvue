@@ -11,4 +11,5 @@ export function initInternalComponent(
   const vnodeComponentOptions = vnode.componentOptions;
   opts._parentListeners = vnodeComponentOptions.listeners;
   opts.propsData = vnodeComponentOptions.propsData;
+  opts._renderChildren = vnodeComponentOptions.children;
 }

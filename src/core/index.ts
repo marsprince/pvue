@@ -14,7 +14,8 @@ import {
   initWatch,
   initVueEvents,
   initProps,
-  initLifecycle
+  initLifecycle,
+  initRender
 } from "./init/initVueInstance";
 import { nextTick } from "./util/nextTick";
 import { callHook } from "./instance/lifeCycle";
@@ -76,6 +77,8 @@ export class Vue {
   $parent: Vue = null;
   $children: Array<Vue> = [];
   $refs: object = {};
+  $slots: any;
+  $scopedSlots: any;
 
   // static props
 
@@ -115,6 +118,7 @@ export class Vue {
     }
     initLifecycle(this);
     initVueEvents(this);
+    initRender(this);
 
     // beforeCreate，这时候是把vue自身的东西挂载完毕
     callHook(this, "beforeCreate");
@@ -157,7 +161,7 @@ export class Vue {
     //_parentVnode 父组件创建的组件节点
     const { render, _parentVnode } = this.$options;
     const vnode = render.call(this, this.$createElement);
-    this.$vnode = vnode.parent = _parentVnode;
+    vnode.parent = _parentVnode;
     return vnode;
   }
 
@@ -174,7 +178,7 @@ export class Vue {
       children = data;
       data = undefined;
     }
-    return createElement.call(this, tag, data, children，normalizationType);
+    return createElement.call(this, tag, data, children, normalizationType);
   }
 
   $mount: Function;

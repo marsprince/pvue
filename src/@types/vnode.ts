@@ -8,6 +8,7 @@ export interface IVNode {
   text?: string;
   // 节点对应的vue组件
   context?: vueComponent;
+  fnContext?: any;
   // vnode对应的真实节点
   elm?: Node;
   // 是否是静态节点（即编译出来完全没有变量）
@@ -33,6 +34,7 @@ export interface IVNodeData {
   ref?: string;
   // ref在for循环中
   refInFor?: boolean;
+  slot?: any;
 }
 
 export interface IComponentOptions {
@@ -48,3 +50,5 @@ export interface IVNodeDirective {
   value?: any;
   oldValue?: any;
 }
+
+export type ScopedSlotsData = Array<{ key: string; fn: Function }>;

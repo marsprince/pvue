@@ -3,7 +3,10 @@ import { Vue } from "../index";
 import VNode from "./vnode";
 import { resolveAsset } from "../util/options";
 import { createComponent } from "./createComponent";
-import { normalizeChildren } from "./helpers/normalizeChildren";
+import {
+  normalizeChildren,
+  simpleNormalizeChildren
+} from "./helpers/normalizeChildren";
 
 const SIMPLE_NORMALIZE = 1;
 const ALWAYS_NORMALIZE = 2;
@@ -21,6 +24,8 @@ export function createElement(
   }
   if (normalizationType === ALWAYS_NORMALIZE) {
     children = normalizeChildren(children);
+  } else if (normalizationType === SIMPLE_NORMALIZE) {
+    children = simpleNormalizeChildren(children);
   }
   let vnode;
   // tag有多种可能

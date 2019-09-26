@@ -1,4 +1,4 @@
-type hookFunc = Function | Array<Function>;
+type hookFunc = Function;
 export interface IComponentHooks {
   init?: hookFunc;
   // 执行时机：组件update之前
@@ -21,7 +21,7 @@ export interface IRuntimeHooks {
   // 执行时机：每个patch的最后
   insert?: hookFunc;
   // 执行时机，每个patchVnode的最后
-  postPatch?: hookFunc;
+  postpatch?: hookFunc;
 }
 
-export type IHooks = IComponentHooks | IModuleHooks | IRuntimeHooks;
+export type IHooks = IComponentHooks & IModuleHooks & IRuntimeHooks;

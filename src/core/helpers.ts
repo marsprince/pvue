@@ -1,7 +1,11 @@
 import { createTextVNode } from "./vdom/vnode";
 import { toString } from "../shared/utils";
-import { resolveFilter } from "./instance/renderHelper";
-import { renderList } from "./instance/renderHelper";
+import {
+  resolveFilter,
+  renderList,
+  renderSlot,
+  resolveScopedSlots
+} from "./instance/renderHelper";
 
 export function installRenderHelpers(target: any) {
   target._c = target.$createElement;
@@ -10,4 +14,6 @@ export function installRenderHelpers(target: any) {
   target._s = toString;
   target._f = resolveFilter;
   target._l = renderList;
+  target._t = renderSlot;
+  target._u = resolveScopedSlots;
 }
