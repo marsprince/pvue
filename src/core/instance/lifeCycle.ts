@@ -67,6 +67,9 @@ export function updateChildComponent(vnode: IVNode) {
     vm._vnode.parent = vnode;
   }
 
+  vm.$attrs = vnode.data.attrs || {};
+  vm.$listeners = vnode.componentOptions.listeners || {};
+
   if (propsData && props) {
     toggleObserving(false);
     const props = vm._props;
