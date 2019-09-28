@@ -79,6 +79,8 @@ export class Vue {
   $refs: object = {};
   $slots: any;
   $scopedSlots: any;
+  $props: any;
+  $root: Vue;
 
   // static props
 

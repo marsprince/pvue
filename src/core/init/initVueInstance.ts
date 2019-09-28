@@ -125,6 +125,11 @@ export function initProps(vm: vueComponent) {
       proxy(vm, `_props`, key);
     }
   }
+  Object.defineProperty(vm, "$props", {
+    get() {
+      return this._props;
+    }
+  });
   toggleObserving(true);
 }
 
@@ -143,6 +148,7 @@ export function initLifecycle(vm: vueComponent) {
     parent.$children.push(vm);
   }
   vm.$parent = parent;
+  vm.$root = parent ? parent.$root : vm;
 }
 
 export function initRender(vm: vueComponent) {
@@ -153,4 +159,7 @@ export function initRender(vm: vueComponent) {
   if (parentVnode) {
     vm.$scopedSlots = parentVnode.data.scopedSlots || {};
   }
+  const parentData = parentVnode && parentVnode.data;
+  defineReactive(vm, "$attrs", (parentData && parentData.attrs) || {});
+  defineReactive(vm, "$listeners", options._parentListeners || {});
 }
