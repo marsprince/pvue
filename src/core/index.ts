@@ -37,7 +37,8 @@ import {
   filter,
   del,
   use,
-  observable
+  observable,
+  directive
 } from "./methods/index";
 
 import { initInternalComponent } from "./init/util";
@@ -212,6 +213,7 @@ export class Vue {
   static filter = filter;
   static use = use;
   static observable = observable;
+  static directive = directive;
 
   // instance method
   public $nextTick = nextTick.bind(this);

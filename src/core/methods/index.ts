@@ -13,3 +13,4 @@ export * from "./filter";
 export * from "./del";
 export * from "./use";
 export * from "./observable";
+export * from "./directive";
