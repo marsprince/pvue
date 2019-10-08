@@ -32,7 +32,7 @@ const com = {
 };
 const app = new Vue({
   template:
-    "<div @click='onClick'>{{size.z}}<child-com size='1'><template v-slot:header>123</template></child-com></div>",
+    "<div @click='onClick' v-text='size.z'><child-com size='1'><template v-slot:header>123</template></child-com></div>",
   // components: {
   //   com
   // },
