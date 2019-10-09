@@ -10,7 +10,7 @@ export interface IVNode {
   context?: vueComponent;
   fnContext?: any;
   // vnode对应的真实节点
-  elm?: Node;
+  elm?: Element;
   // 是否是静态节点（即编译出来完全没有变量）
   isStatic?: boolean;
   key?: string | number;
@@ -35,6 +35,8 @@ export interface IVNodeData {
   // ref在for循环中
   refInFor?: boolean;
   slot?: any;
+  class?: any;
+  staticClass?: string;
 }
 
 export interface IComponentOptions {
