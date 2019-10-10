@@ -141,3 +141,16 @@ export function extend(to: Object, _from?: Object): Object {
   }
   return to;
 }
+
+/**
+ * Merge an Array of Objects into a single Object.
+ */
+export function toObject(arr: Array<any>): Object {
+  const res = {};
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i]) {
+      extend(res, arr[i]);
+    }
+  }
+  return res;
+}
