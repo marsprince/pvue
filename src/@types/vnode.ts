@@ -37,6 +37,9 @@ export interface IVNodeData {
   slot?: any;
   class?: any;
   staticClass?: string;
+  style?: any;
+  staticStyle?: string;
+  normalizedStyle?: any;
 }
 
 export interface IComponentOptions {

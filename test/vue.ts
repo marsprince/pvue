@@ -31,8 +31,7 @@ const com = {
   template: "<div>123</div>"
 };
 const app = new Vue({
-  template:
-    "<div @click='onClick' :class='{ red: show }'><child-com size='1'><template v-slot:header>123</template></child-com></div>",
+  template: "<div :style='{fontSize:size.z}' style='color:red'>123</div>",
   // components: {
   //   com
   // },
@@ -46,7 +45,7 @@ const app = new Vue({
       items: [1, 2, 3],
       show: true,
       size: {
-        z: 1
+        z: "12px"
       },
       // testSet: {
       //   m: 111
