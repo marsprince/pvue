@@ -1,109 +1,41 @@
 import { templateVue as Vue } from "../src/index";
-const childCom = {
+let A = {
+  template: '<div class="a"><p>A Comp</p></div>',
+  name: "A"
+};
+
+let B = {
+  template: '<div class="b"><p>B Comp</p></div>',
+  name: "B"
+};
+
+let vm = new Vue({
+  el: "#app",
   template:
-    '<div @click="onClick"><slot name="header" :user="user"></slot></div>',
-  props: {
-    size: {
-      type: Number
-    }
-  },
+    "<div>" +
+    "<keep-alive>" +
+    '<component :is="currentComp">' +
+    "</component>" +
+    "</keep-alive>" +
+    '<button @click="change">switch</button>' +
+    "</div>",
   data() {
     return {
-      user: {
-        firstName: "liu"
-      },
-      message: "test"
+      currentComp: "A"
     };
-  },
-  methods: {
-    onClick() {
-      this.$emit("click", "childClick");
-    }
   },
   updated() {
-    console.log("child");
+    console.log("updated");
   },
-  mounted() {
-    console.log(this);
-  }
-};
-const com = {
-  template: "<div>123</div>"
-};
-const app = new Vue({
-  template: "<div :style='{fontSize:size.z}' style='color:red'>123</div>",
-  // components: {
-  //   com
-  // },
-  data() {
-    return {
-      // showContent: "展示",
-      // notShowContent: "不展示",
-      user: {
-        firstName: "liu"
-      },
-      items: [1, 2, 3],
-      show: true,
-      size: {
-        z: "12px"
-      },
-      // testSet: {
-      //   m: 111
-      // },
-      // arr: [],
-      a: {
-        b: {
-          c: 1
-        }
-      }
-    };
-  },
-  // computed: {
-  //   com() {
-  //     return this.a.b.c + 2;
-  //   }
-  // },
-  // watch: {
-  //   "a.b.c": function(newVal, oldVal) {
-  //     console.log(newVal, oldVal);
-  //   }
-  // },
   methods: {
-    onClick(ms) {
-      // this.arr[0].a = Math.random();
-      // if (this.arr.length === 0) {
-      //   this.$set(this.arr, "0", {});
-      // } else {
-      //   this.$set(this.arr[0], "a", Math.random());
-      // }
-      this.size.z = Math.random();
+    change() {
+      this.currentComp = this.currentComp === "A" ? "B" : "A";
     }
   },
-  mounted() {
-    console.log(this);
+  components: {
+    A,
+    B
   }
 });
-Vue.component("childCom", childCom);
-Vue.component("com", com);
-app.$mount("#app");
-app.$mount("#app");
 
-app.$watch(
-  "a",
-  function(newVal, oldVal) {
-    console.log("watch:", newVal, oldVal);
-  },
-  {
-    deep: true
-  }
-);
-
-// console.log(x.options, y.options);
-app.$on("test", function(msg) {
-  console.log(msg);
-});
-// app.$emit("test", "hi");
-// => "hi"
-// app.$emit("test", "hi");
-// app.$off("test");
-// // app.$emit("test", "hi");
+vm.$mount("#app");

@@ -6,10 +6,12 @@ import { mountComponent } from "../../core/instance/lifeCycle";
 export function mount(el: any) {
   const options = this.$options;
   // 添加编译相关
-  const ref = compileToFunctions(this.$options.template);
-  options.render = ref.render;
-  options.staticRenderFns = ref.staticRenderFns;
-  console.log(ref.render.toString(), ref.staticRenderFns.toString());
+  if (!this.$options.render) {
+    const ref = compileToFunctions(this.$options.template);
+    options.render = ref.render;
+    options.staticRenderFns = ref.staticRenderFns;
+    console.log(ref.render.toString(), ref.staticRenderFns.toString());
+  }
 
   return runTimeMount.call(this, el);
 }

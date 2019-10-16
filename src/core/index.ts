@@ -92,7 +92,7 @@ export class Vue {
   //]
   // 会和每个组件进行merge
   static options: ComponentOptions = {
-    components: Object.create(null),
+    components: {},
     directives: {},
     filters: Object.create(null)
   };

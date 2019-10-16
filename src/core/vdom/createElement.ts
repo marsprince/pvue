@@ -14,7 +14,7 @@ const ALWAYS_NORMALIZE = 2;
 // 外界调用的,初始化逻辑移出
 export function createElement(
   tag?: any,
-  data?: IVNodeData,
+  data: IVNodeData = {},
   children?: any,
   normalizationType?: number
 ) {
