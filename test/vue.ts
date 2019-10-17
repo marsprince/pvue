@@ -1,16 +1,27 @@
 import { templateVue as Vue } from "../src/index";
 let A = {
   template: '<div class="a"><p>A Comp</p></div>',
-  name: "A"
+  name: "A",
+  activated() {
+    console.log("activated A");
+  },
+  deactivated() {
+    console.log("deactivated A");
+  }
 };
 
 let B = {
   template: '<div class="b"><p>B Comp</p></div>',
-  name: "B"
+  name: "B",
+  activated() {
+    console.log("activated b");
+  },
+  deactivated() {
+    console.log("deactivated b");
+  }
 };
 
 let vm = new Vue({
-  el: "#app",
   template:
     "<div>" +
     "<keep-alive>" +
@@ -23,9 +34,6 @@ let vm = new Vue({
     return {
       currentComp: "A"
     };
-  },
-  updated() {
-    console.log("updated");
   },
   methods: {
     change() {

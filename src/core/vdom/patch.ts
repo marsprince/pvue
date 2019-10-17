@@ -112,6 +112,10 @@ export class Patch {
 
   initComponent(vnode: IVNode) {
     vnode.elm = vnode.componentInstance.$el;
+    if (this.isPatchable(vnode)) {
+      this.invokeCreateHooks(vnode);
+    } else {
+    }
   }
 
   reactivateComponent(vnode, parentElm, refElm) {
