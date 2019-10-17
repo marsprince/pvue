@@ -89,3 +89,17 @@ export function updateChildComponent(vnode: IVNode) {
     vm.$forceUpdate();
   }
 }
+
+export function activateChildComponent(vm) {
+  for (let i = 0; i < vm.$children.length; i++) {
+    activateChildComponent(vm.$children[i]);
+  }
+  callHook(vm, "activated");
+}
+
+export function deactivateChildComponent(vm) {
+  for (let i = 0; i < vm.$children.length; i++) {
+    deactivateChildComponent(vm.$children[i]);
+  }
+  callHook(vm, "deactivated");
+}

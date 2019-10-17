@@ -6,6 +6,11 @@ import { extractPropsFromVNodeData } from "./helpers/extractProp";
 import { updateChildComponent } from "../instance/lifeCycle";
 import { getActiveInstance } from "../instance/lifeCycle";
 import { IComponentHooks } from "../../@types/hooks";
+import {
+  callHook,
+  activateChildComponent,
+  deactivateChildComponent
+} from "../instance/lifeCycle";
 
 // 所有的组件节点都是从这里创建的
 export function createComponent(
@@ -75,6 +80,36 @@ const componentVNodeHooks: IComponentHooks = {
     // const options = vnode.componentOptions;
     vnode.componentInstance = oldVnode.componentInstance;
     updateChildComponent(vnode);
+  },
+  insert(vnode: IVNode) {
+    // keep-alive一定是组件
+    const { context, componentInstance } = vnode;
+    if (!componentInstance._isMounted) {
+      componentInstance._isMounted = true;
+      callHook(componentInstance, "mounted");
+    }
+    if (vnode.data.keepAlive) {
+      if (context._isMounted) {
+        // vue-router#1212
+        // During updates, a kept-alive component's child components may
+        // change, so directly walking the tree here may call activated hooks
+        // on incorrect children. Instead we push them into a queue which will
+        // be processed after the whole patch process ended.
+        // queueActivatedComponent(componentInstance);
+      } else {
+        activateChildComponent(componentInstance /* direct */);
+      }
+    }
+  },
+  destroy(vnode) {
+    const { componentInstance } = vnode;
+    if (!componentInstance._isDestroyed) {
+      if (!vnode.data.keepAlive) {
+        componentInstance.$destroy();
+      } else {
+        deactivateChildComponent(componentInstance /* direct */);
+      }
+    }
   }
 };
 const hooksToMerge = Object.keys(componentVNodeHooks);
