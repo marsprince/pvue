@@ -55,10 +55,20 @@ export function createComponentInstanceForVnode(vnode: IVNode) {
 }
 const componentVNodeHooks: IComponentHooks = {
   init(vnode: IVNode) {
-    const child = (vnode.componentInstance = createComponentInstanceForVnode(
-      vnode
-    ));
-    child.$mount(undefined);
+    if (
+      vnode.componentInstance &&
+      !vnode.componentInstance._isDestroyed &&
+      vnode.data.keepAlive
+    ) {
+      // kept-alive components, treat as a patch
+      // 跳过keep-alive的初始化过程
+      componentVNodeHooks.prepatch(vnode, vnode);
+    } else {
+      const child = (vnode.componentInstance = createComponentInstanceForVnode(
+        vnode
+      ));
+      child.$mount(undefined);
+    }
   },
   prepatch(vnode: IVNode, oldVnode: IVNode) {
     // 走到Patch说明是同一个节点，新节点没有走到新建组件的逻辑，直接复用老的即可

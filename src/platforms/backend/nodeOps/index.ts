@@ -40,6 +40,18 @@ function createComment(text: string): Comment {
   return document.createComment(text);
 }
 
+function nextSibling(node: Node): Node {
+  return node.nextSibling;
+}
+
+function insertBefore(parentNode: Node, newNode: Node, referenceNode: Node) {
+  parentNode.insertBefore(newNode, referenceNode);
+}
+
+function removeChild(node: Node, child: Node) {
+  node.removeChild(child);
+}
+
 export default {
   createElement,
   appendChild,
@@ -47,5 +59,8 @@ export default {
   setTextContent,
   tagName,
   parentNode,
-  createComment
+  createComment,
+  nextSibling,
+  insertBefore,
+  removeChild
 };

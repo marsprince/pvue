@@ -1,4 +1,6 @@
 import { invokeWithErrorHandling } from "../../util/error";
+import { isDef } from "../../../shared/utils";
+import { IVNode } from "../../../@types/vnode";
 
 export function createFnInvoker(
   fns: Function | Array<Function>,
@@ -18,4 +20,15 @@ export function createFnInvoker(
   }
   invoker.fns = fns;
   return invoker;
+}
+
+export function getFirstComponentChild(children?: Array<IVNode>): IVNode {
+  if (Array.isArray(children)) {
+    for (let i = 0; i < children.length; i++) {
+      const c = children[i];
+      if (isDef(c) && isDef(c.isComponent)) {
+        return c;
+      }
+    }
+  }
 }

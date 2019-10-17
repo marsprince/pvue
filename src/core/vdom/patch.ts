@@ -69,15 +69,43 @@ export class Patch {
     }
   }
 
+  isPatchable(vnode) {
+    while (vnode.componentInstance) {
+      vnode = vnode.componentInstance._vnode;
+    }
+    return isDef(vnode.tag);
+  }
+
   invokeUpdateHook(oldVnode: IVNode, vnode: IVNode) {
     const { data } = vnode;
     const cbs = this.cbs;
-    if (isDef(data)) {
+    if (isDef(data) && this.isPatchable(vnode)) {
+      if (data.hook && data.hook.update) {
+        data.hook.update(oldVnode, vnode);
+      }
       for (let i = 0; i < cbs.update.length; ++i) {
         cbs.update[i](oldVnode, vnode);
       }
-      if (data.hook && data.hook.update) {
-        data.hook.update(oldVnode, vnode);
+    }
+  }
+
+  invokeDestroyHook(vnode) {
+    // 先触发data中的hook
+    const data = vnode.data;
+    const cbs = this.cbs;
+    if (isDef(data)) {
+      if (data.hook && data.hook.destroy) {
+        data.hook.destroy(vnode);
+      }
+    }
+    if (cbs.destroy) {
+      for (let i = 0; i < cbs.destroy.length; ++i) {
+        cbs.destroy[i](vnode);
+      }
+    }
+    if (isDef(vnode.children)) {
+      for (let j = 0; j < vnode.children.length; ++j) {
+        this.invokeDestroyHook(vnode.children[j]);
       }
     }
   }
@@ -85,22 +113,32 @@ export class Patch {
   initComponent(vnode: IVNode) {
     vnode.elm = vnode.componentInstance.$el;
   }
-  createComponent(vnode: IVNode, parentElm?: Element) {
+
+  reactivateComponent(vnode, parentElm, refElm) {
+    this.insert(parentElm, vnode.elm, refElm);
+  }
+  createComponent(vnode: IVNode, parentElm?: Element, refElm?: any) {
     // 源码是用data判断的
     // 这里为了清晰加了一个变量
     if (vnode.isComponent) {
+      const isReactivated =
+        isDef(vnode.componentInstance) && vnode.data.keepAlive;
       invokeComponentHook("init", vnode);
       if (vnode.componentInstance) {
         this.initComponent(vnode);
-        this.insert(parentElm, vnode.elm);
+        this.insert(parentElm, vnode.elm, refElm);
+        // 如果是keep-alive，在这里直接渲染
+        if (isReactivated) {
+          this.reactivateComponent(vnode, parentElm, refElm);
+        }
       }
     }
   }
 
-  createElm(vnode?: IVNode, parentElm?: any) {
+  createElm(vnode?: IVNode, parentElm?: any, beforeElm?: any) {
     // 如果是组件节点，直接return
     if (vnode.isComponent) {
-      this.createComponent(vnode, parentElm);
+      this.createComponent(vnode, parentElm, beforeElm);
       return;
     }
     // 校验tag是否合法
@@ -119,13 +157,13 @@ export class Patch {
       if (isDef(vnode.data)) {
         this.invokeCreateHooks(vnode);
       }
-      this.insert(parentElm, vnode.elm);
+      this.insert(parentElm, vnode.elm, beforeElm);
     } else if (vnode.isComment) {
       vnode.elm = nodeOps.createComment(vnode.text);
-      this.insert(parentElm, vnode.elm);
+      this.insert(parentElm, vnode.elm, beforeElm);
     } else {
       vnode.elm = nodeOps.createTextNode(vnode.text);
-      this.insert(parentElm, vnode.elm);
+      this.insert(parentElm, vnode.elm, beforeElm);
     }
     return vnode;
   }
@@ -177,7 +215,35 @@ export class Patch {
   insert(parent, elm, ref?: any) {
     // 如果父vnode存在
     if (isDef(parent)) {
-      this.nodeOps.appendChild(parent, elm);
+      if (isDef(ref)) {
+        if (this.nodeOps.parentNode(ref) === parent) {
+          this.nodeOps.insertBefore(parent, elm, ref);
+        }
+      } else {
+        this.nodeOps.appendChild(parent, elm);
+      }
+    }
+  }
+
+  removeNode(el) {
+    const parent = this.nodeOps.parentNode(el);
+    // element may have already been removed due to v-html / v-text
+    if (isDef(parent)) {
+      this.nodeOps.removeChild(parent, el);
+    }
+  }
+  removeVnodes(vnodes, startIdx, endIdx) {
+    for (; startIdx <= endIdx; ++startIdx) {
+      const ch = vnodes[startIdx];
+      if (isDef(ch)) {
+        if (isDef(ch.tag)) {
+          this.removeAndInvokeRemoveHook(ch);
+          this.invokeDestroyHook(ch);
+        } else {
+          // Text node
+          this.removeNode(ch.elm);
+        }
+      }
     }
   }
 
@@ -186,6 +252,10 @@ export class Patch {
     let node = new VNode(this.nodeOps.tagName(elm).toLowerCase(), {}, []);
     node.elm = elm;
     return node;
+  }
+
+  removeAndInvokeRemoveHook(vnode, rm?: any) {
+    this.removeNode(vnode.elm);
   }
 
   patch(oldVnode: IVNode | Element, vnode: IVNode) {
@@ -220,7 +290,13 @@ export class Patch {
         // 如果不是相同节点，走新建流程
         const oldElm = (oldVnode as IVNode).elm;
         const parentElm = this.nodeOps.parentNode(oldElm);
-        this.createElm(vnode, parentElm);
+        this.createElm(vnode, parentElm, this.nodeOps.nextSibling(oldElm));
+        // destroy old node
+        if (isDef(parentElm)) {
+          this.removeVnodes([oldVnode], 0, 0);
+        } else if (isDef(oldVnode.tag)) {
+          this.invokeDestroyHook(oldVnode);
+        }
       }
     }
     // patch运行完毕，将最后一个出栈

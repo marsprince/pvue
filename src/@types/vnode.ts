@@ -40,6 +40,7 @@ export interface IVNodeData {
   style?: any;
   staticStyle?: string;
   normalizedStyle?: any;
+  keepAlive?: boolean;
 }
 
 export interface IComponentOptions {
