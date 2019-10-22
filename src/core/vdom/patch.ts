@@ -9,9 +9,10 @@ export const emptyNode = createUseLessVNode();
 function sameVnode(a, b) {
   return (
     a.key === b.key &&
-    (a.tag === b.tag &&
+    ((a.tag === b.tag &&
       a.isComment === b.isComment &&
-      isDef(a.data) === isDef(b.data))
+      isDef(a.data) === isDef(b.data)) ||
+      (a.asyncFactory === b.asyncFactory && isUndef(b.asyncFactory.error)))
   );
 }
 
@@ -179,6 +180,10 @@ export class Patch {
     }
     const nodeOps = this.nodeOps;
     const elm = (vnode.elm = oldVnode.elm);
+    if (oldVnode.isAsyncPlaceholder && vnode.componentOptions) {
+      this.replaceVnode(oldVnode, vnode);
+      return;
+    }
     // 激活组件节点的Prepatch钩子
     if (vnode.isComponent) {
       invokeComponentHook("prepatch", vnode, oldVnode);
@@ -202,7 +207,13 @@ export class Patch {
   updateChildren(parentElm: Node, oldCh: Array<IVNode>, newCh: Array<IVNode>) {
     // 先写一个简单的
     for (let i = 0; i < oldCh.length; i++) {
-      this.patchVnode(oldCh[i], newCh[i]);
+      const oldVnode = oldCh[i];
+      const vnode = newCh[i];
+      if (sameVnode(oldVnode, vnode)) {
+        this.patchVnode(oldCh[i], newCh[i]);
+      } else {
+        this.replaceVnode(oldVnode, vnode);
+      }
     }
   }
 
@@ -262,6 +273,18 @@ export class Patch {
     this.removeNode(vnode.elm);
   }
 
+  replaceVnode(oldVnode, vnode) {
+    const oldElm = (oldVnode as IVNode).elm;
+    const parentElm = this.nodeOps.parentNode(oldElm);
+    this.createElm(vnode, parentElm, this.nodeOps.nextSibling(oldElm));
+    // destroy old node
+    if (isDef(parentElm)) {
+      this.removeVnodes([oldVnode], 0, 0);
+    } else if (isDef(oldVnode.tag)) {
+      this.invokeDestroyHook(oldVnode);
+    }
+  }
+
   patch(oldVnode: IVNode | Element, vnode: IVNode) {
     // 这里是摧毁逻辑
     if (isUndef(vnode)) {
@@ -292,15 +315,7 @@ export class Patch {
           oldVnode = this.emptyNodeAt(oldVnode as Element);
         }
         // 如果不是相同节点，走新建流程
-        const oldElm = (oldVnode as IVNode).elm;
-        const parentElm = this.nodeOps.parentNode(oldElm);
-        this.createElm(vnode, parentElm, this.nodeOps.nextSibling(oldElm));
-        // destroy old node
-        if (isDef(parentElm)) {
-          this.removeVnodes([oldVnode], 0, 0);
-        } else if (isDef(oldVnode.tag)) {
-          this.invokeDestroyHook(oldVnode);
-        }
+        this.replaceVnode(oldVnode, vnode);
       }
     }
     // patch运行完毕，将最后一个出栈

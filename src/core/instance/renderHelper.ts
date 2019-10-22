@@ -3,6 +3,8 @@ import { IVNode } from "../../@types/vnode";
 import { ScopedSlotsData } from "../../@types/vue";
 import { vueComponent } from "../../@types/vue";
 
+export let currentRenderingInstance: any;
+
 export function resolveFilter(id: string) {
   return resolveAsset(this.$options, "filters", id);
 }
