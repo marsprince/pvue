@@ -43,7 +43,7 @@ import {
 
 import { initInternalComponent } from "./init/util";
 import { setActiveInstance } from "./instance/lifeCycle";
-
+import { currentRenderingInstance } from "./instance/renderHelper";
 import { ComponentOptions } from "../@types/vue";
 
 export class Vue {
@@ -115,7 +115,7 @@ export class Vue {
       // 复杂的合并规则
       this.$options = mergeOptions(
         (this.constructor as any).options,
-        options,
+        options || {},
         this
       );
     }
@@ -163,7 +163,9 @@ export class Vue {
   _render() {
     //_parentVnode 父组件创建的组件节点
     const { render, _parentVnode } = this.$options;
+    currentRenderingInstance = this;
     const vnode = render.call(this, this.$createElement);
+    currentRenderingInstance = null;
     vnode.parent = _parentVnode;
     return vnode;
   }

@@ -9,8 +9,9 @@ export function component(id: string, options?: ComponentOptions) {
     // set name
     if (isPlainObject(options)) {
       options.name = options.name || id;
+      options = this.extend(options);
     }
-    this.options.components[id] = this.extend(options);
+    this.options.components[id] = options;
     return this.options.components[id];
   }
 }

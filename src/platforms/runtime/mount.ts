@@ -12,7 +12,6 @@ export function mount(el: any) {
     options.staticRenderFns = ref.staticRenderFns;
     console.log(ref.render.toString(), ref.staticRenderFns.toString());
   }
-
   return runTimeMount.call(this, el);
 }
 

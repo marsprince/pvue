@@ -1,6 +1,6 @@
 import { IVNode, IVNodeData } from "../../@types/vnode";
 import { vueComponent } from "../../@types/vue";
-import { isObject } from "../../shared/utils";
+import { isObject, isUndef } from "../../shared/utils";
 import VNode from "./vnode";
 import { extractPropsFromVNodeData } from "./helpers/extractProp";
 import { updateChildComponent } from "../instance/lifeCycle";
@@ -11,6 +11,11 @@ import {
   activateChildComponent,
   deactivateChildComponent
 } from "../instance/lifeCycle";
+
+import {
+  resolveAsyncComponent,
+  createAsyncPlaceholder
+} from "./helpers/asyncComponent";
 
 // 所有的组件节点都是从这里创建的
 export function createComponent(
@@ -23,10 +28,24 @@ export function createComponent(
   tag?: string
 ): IVNode {
   const baseCtor = context.$options._base;
+  const extendCtor = Object.getPrototypeOf(context).constructor;
   // extend
   if (isObject(Ctor)) {
-    Ctor = baseCtor.extend(Ctor, Object.getPrototypeOf(context).constructor);
+    Ctor = baseCtor.extend(Ctor, extendCtor);
   }
+  let asyncFactory;
+  if (isUndef(Ctor.cid)) {
+    // 异步组件进这里
+    asyncFactory = Ctor;
+    Ctor = resolveAsyncComponent(asyncFactory, baseCtor, extendCtor);
+    if (Ctor === undefined) {
+      // return a placeholder node for async component, which is rendered
+      // as a comment node but preserves all the raw information for the node.
+      // the information will be used for async server-rendering and hydration.
+      return createAsyncPlaceholder(asyncFactory, data, context, children, tag);
+    }
+  }
+  /**上面为对Cotr的处理*/
   const name = Ctor.options.name || tag;
   // 从data中解压出propsData，扔到componentOptions上
   const propsData = extractPropsFromVNodeData(data, Ctor, tag);
