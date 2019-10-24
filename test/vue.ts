@@ -1,21 +1,13 @@
 import { templateVue as Vue } from "../src/index";
 
 const a = {
-  template: '<div class="a"><p>A Comp</p></div>',
-  name: "A",
-  activated() {
-    console.log("activated A");
-  },
-  deactivated() {
-    console.log("deactivated A");
+  functional: true,
+  render(h) {
+    return h("div", {}, "acomp");
   }
 };
 
-const A = () => {
-  return {
-    component: Promise.resolve(a)
-  };
-};
+const A = a;
 
 // Vue.component("A", A);
 
