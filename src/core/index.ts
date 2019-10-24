@@ -175,7 +175,8 @@ export class Vue {
     tag?: string,
     data?: IVNodeData,
     children?: Array<IVNodeData>,
-    normalizationType?: any
+    normalizationType?: any,
+    alwaysNormalize = true
   ): IVNode {
     // 如果data是一个数组，这时候相当于没有data，其他东西要前移以为
     if (Array.isArray(data)) {
@@ -183,7 +184,14 @@ export class Vue {
       children = data;
       data = undefined;
     }
+    if (alwaysNormalize) {
+      normalizationType = 2;
+    }
     return createElement.call(this, tag, data, children, normalizationType);
+  }
+
+  _c(a, b, c, d) {
+    return this.$createElement(a, b, c, d, false);
   }
 
   $mount: Function;
