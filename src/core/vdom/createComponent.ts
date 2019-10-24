@@ -17,6 +17,8 @@ import {
   createAsyncPlaceholder
 } from "./helpers/asyncComponent";
 
+import { createFunctionalComponent } from "./functionalComponent";
+
 // 所有的组件节点都是从这里创建的
 export function createComponent(
   // 构造函数，可以是对象，构造函数等
@@ -49,6 +51,12 @@ export function createComponent(
   const name = Ctor.options.name || tag;
   // 从data中解压出propsData，扔到componentOptions上
   const propsData = extractPropsFromVNodeData(data, Ctor, tag);
+
+  // functional component
+  if (Ctor.options.functional) {
+    return createFunctionalComponent(Ctor, propsData, data, context, children);
+  }
+
   // 自定义事件
   const listeners = data.on;
   installComponentHooks(data);
